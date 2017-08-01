@@ -51,8 +51,40 @@
                     <td>@account.Email</td>
                     <td style="white-space:pre;">@String.Join("\r\n", account.Characters)</td>
                     <td>@account.Role</td>
-                    <td>//TODO</td>
-                </tr>
+                    <td>
+
+                        <text>
+                            <table>
+                                <tr>
+                                    <td>
+                                        <a class="btn btn-sm btn-default" href="@Url.Action("Edit", new {@id = @account.Id})">
+                                            <i class="fa fa-pencil"></i>&thinsp;&thinsp;@Localizer["Edit"]
+                                        </a>
+                                    </td>
+                                    <td>
+                                        @if (account.IsLocked)
+                                        {
+                                            <a class="btn btn-sm btn-warning" href="@Url.Action("Unlock", new {@id = @account.Id})">
+                                                <i class="fa fa-warning"></i>&thinsp;&thinsp;@Localizer["Unlock"]
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a class="btn btn-sm btn-warning" href="@Url.Action("Lock", new {@id = @account.Id})">
+                                                <i class="fa fa-warning"></i>&thinsp;&thinsp;@Localizer["Lock"]
+                                            </a>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-sm btn-danger" href="@Url.Action("Delete", new {@id = @account.Id})">
+                                            <i class="fa fa-times"></i>&thinsp;&thinsp;@Localizer["Delete"]
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </text>                    
+                    </td>
+                </tr>            
             }
         </tbody>
     </table>
