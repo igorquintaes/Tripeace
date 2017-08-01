@@ -1,0 +1,71 @@
+@using Tripeace.Application.Helpers.Extensions
+
+@model Tripeace.Application.ViewModels.Account.Index
+
+@{
+    ViewData["Title"] = Localizer["Title", ServerInfo.Name];
+}
+
+@if (Model.IsNewAccount)
+{
+    <p>@Localizer["WelcomeYourNewAccount"]</p>
+}
+
+<div class="acc-panel">
+    <div class="container account-info">
+        <div class="col-md-6">
+            @Localizer["AccountName"]
+        </div>
+        <div class="col-md-6">
+            @Model.AccountName
+        </div>
+        <div class="col-md-6">
+            @Localizer["Email"]
+        </div>
+        <div class="col-md-6">
+            @Model.Email
+        </div>
+        <div class="col-md-12">
+            <button>@Localizer["EditInfo"]</button>
+        </div>
+    </div>
+    <hr />
+    <div class="character-table">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>@Localizer["CharacterName"]</th>
+                    <th>@Localizer["CharacterLevel"]</th>
+                    <th>@Localizer["CharacterVocation"]</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @if (Model.Characters.Any())
+            {
+                @foreach (var character in Model.Characters)
+                {
+                <tr>
+                    <td>@character.Name</td>
+                    <td>@character.Level</td>
+                    <td>@character.Vocation.ToCamelCaseString()</td>
+                    <td><a class="btn-default" asp-controller="Account" asp-action="EditCharacter" asp-route-id="@character.Id">@Localizer["Edit"]</a></td>
+                </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td class="no-characters" colspan="4">@Localizer["YouHaveNoCharacters"]</td>
+                </tr>
+            }
+                <tr>
+                    <td colspan="4">
+                        <a class="btn-default" href="@Url.Action("CreateCharacter")">@Localizer["CreateNewCharacter"]</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+

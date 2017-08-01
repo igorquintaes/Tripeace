@@ -1,0 +1,53 @@
+@using Tripeace.Application.Helpers.Extensions
+@using Tripeace.Domain.Enums
+
+@model Tripeace.Application.ViewModels.Account.CreateCharacter
+
+@{
+    ViewData["Title"] = Localizer["Title", ServerInfo.Name];
+}
+
+<form asp-action="CreateCharacter">
+    <div class="form-horizontal">
+        <h4>@Localizer["CreateCharacter"]</h4>
+        <hr />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="Name" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Vocation" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="Vocation">
+                    @foreach(var vocation in Model.AllowedVocations)
+                    {
+                        <option value="@Convert.ToInt32(vocation)">@vocation.ToString()</option>
+                    }
+                </select>
+                <span asp-validation-for="Vocation" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Sex" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <select asp-for="Sex" asp-items="@(Html.GetEnumSelectList<Sex>())">
+                </select>
+                <span asp-validation-for="Sex" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

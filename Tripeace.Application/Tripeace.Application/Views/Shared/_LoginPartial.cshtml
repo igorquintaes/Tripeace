@@ -1,0 +1,31 @@
+﻿@if(User.Identity.IsAuthenticated)
+{
+    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+    {
+        <span>
+            @Localizer["Welcome"]
+            &emsp;&emsp;
+
+            <i class="fa fa-user"></i>&nbsp;&nbsp;@Html.RouteLink(Localizer["Profile"], new { action = "Profile", controller = "Account" })
+            &emsp;&emsp;
+
+            @if (User.IsInRole("God") || User.IsInRole("GameMaster"))
+            {
+                @:<i class="fa fa-cog"></i>&nbsp;&nbsp;@Html.RouteLink(Localizer["Dashboard"], new { action = "Index", controller = "Dashboard", area = "Admin" })
+                @:&emsp;&emsp;
+            }
+
+            @Html.AntiForgeryToken()
+            <i class="fa fa-power-off"></i>&nbsp;&nbsp;<a href="javascript:document.getElementById('logoutForm').submit()">@Localizer["Logout"]</a>
+        </span>
+    }
+}
+else
+{
+    <span>
+        <i class="fa fa-key"></i>&nbsp;&nbsp;@Html.ActionLink(Localizer["Login"], "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })
+        &emsp;&emsp;
+
+        <i class="fa fa-plus"></i>&nbsp;&nbsp;@Html.RouteLink(Localizer["Register"], new { action = "Register", controller = "Account" })
+    </span>
+}

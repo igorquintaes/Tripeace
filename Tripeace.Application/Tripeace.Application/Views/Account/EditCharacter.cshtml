@@ -1,0 +1,60 @@
+@model Tripeace.Application.ViewModels.Account.EditCharacter
+
+@{
+    ViewData["Title"] = Localizer["Title", ServerInfo.Name];
+}
+
+<form asp-action="EditCharacter">
+    <div class="form-horizontal">
+        <h4>@Localizer["EditCharacter"]</h4>
+        <hr />
+        @Html.HiddenFor(x => x.Id)
+        @Html.HiddenFor(x => x.Name)
+        @Html.HiddenFor(x => x.Sex)
+        @Html.HiddenFor(x => x.Vocation)
+
+        <table class="table-responsive">
+            <tbody>
+                <tr>
+                    <th>@Localizer["CharacterName"]</th>
+                    <td>@Model.Name</td>
+                </tr>
+                <tr>
+                    <th>@Localizer["CharacterSex"]</th>
+                    <td>@Model.Sex</td>
+                </tr>
+                <tr>
+                    <th>@Localizer["CharacterVocation"]</th>
+                    <td>@Model.Vocation.ToString()</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="form-group">
+            <label asp-for="Description" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <textarea asp-for="Description" class="form-control">
+                </textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="checkbox">
+                    <input asp-for="IsVisible" />
+                    <label asp-for="IsVisible"></label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="@Localizer["Save"]" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">@Localizer["Voltar"]</a>
+</div>
+

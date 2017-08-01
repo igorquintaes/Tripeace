@@ -1,0 +1,143 @@
+﻿@inject Microsoft.ApplicationInsights.AspNetCore.JavaScriptSnippet JavaScriptSnippet
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewData["Title"]</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <environment names="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.css" />
+        <link rel="stylesheet" href="~/Areas/User/css/site.css" />
+    </environment>
+
+    <environment names="Staging,Production">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="~/Areas/User/css/site.min.css" asp-append-version="true" />
+        <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.min.css" />
+    </environment>
+    @Html.Raw(JavaScriptSnippet.FullScript)
+    @{
+        var controller = this.ViewContext.RouteData.Values["controller"] as string;
+        var action = this.ViewContext.RouteData.Values["action"] as string;
+    }
+</head>
+
+<body class="@controller @action">
+    <header id="header">
+        <div class="top-bar">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-7 col-xs-7">
+                        <section id="login">
+                            @await Html.PartialAsync("_LoginPartial")
+                        </section>
+                    </div>
+                    <div class="col-sm-5 col-xs-5">
+                        <div class="social">
+                            <ul class="social-share">
+                                <li><img src=@Url.Content("~/Areas/User/images/share.png") alt="@Localizer["Share"]"></li>
+                                <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                                <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div><!--/.container-->
+        </div><!--/.top-bar-->
+
+        <nav class="navbar navbar-inverse" role="banner">
+            <div class="container">
+
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">@Localizer["Menu"]</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>                    
+                </div>
+
+                <div class="collapse navbar-collapse navbar-center">
+                    <ul class="nav navbar-nav top-menu">
+                        <li><a href="@Url.Action("Index", "Home")">@Localizer["Home"]</a></li>
+                        <li><a href="@Url.Action("Index", "Account")">@Localizer["Account"]</a></li>
+                        <li><a href="@Url.Action("Index", "Highscores" )">@Localizer["Highscores"]</a></li>
+                        <li><a href="@Url.Action("Index", "Library")">@Localizer["Library"]</a></li>
+                        <li><a href="@Url.Action("Index", "Community")">@Localizer["Community"]</a></li>
+                        <li><a href="@Url.Action("Index", "Premium" )">@Localizer["Premium"]</a></li>
+                        <li><a href="@Url.Action("Index", "Forum" )">@Localizer["Forum"]</a></li>
+                        <li><a href="@Url.Action("About", "Home" )">@Localizer["About"]</a></li>
+                        <li><a href="@Url.Action("Contact", "Home")">@Localizer["Contact"]</a></li>
+                    </ul>
+                </div>
+            </div><!--/.container-->
+        </nav><!--/nav-->
+    </header><!--/header-->
+
+    <div class="image-layout-container">
+        <div class="container container-content">
+            <section id="content" class="row">
+
+                <div id="content-header" class="col-sm-12">
+                    <div class="content-header-image">
+                        <img src="@Url.Content("~/Areas/User/images/logo.png")" alt="@Localizer["Logo"]"/>
+                    </div>
+                </div>
+
+                <div id="content-body" class="col-sm-9">
+                    @await Html.PartialAsync("_SelectLanguagePartial")
+                    @RenderBody()
+                </div>
+
+                <div id="right-panel" class="col-sm-3">
+                    <div class="sidebar-module sidebar-module-inset wow fadeInDown" data-wow-duration="1000ms" data-wow-delay="600ms">
+                        <div class="widget download-btn">
+                            <a href="@Url.Action("Download", "Home")"><img src=@Url.Content("~/Areas/User/images/shield.png") alt="@Localizer["Download"]"></a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <footer id="footer" class="midnight-blue">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-10">
+                    @Localizer["AllRightsReserved", DateTime.Now.Year, ServerInfo.Name]
+                </div>
+                <div id="developer-link" class="col-sm-2">
+                    @Localizer["WebSiteDevelopedBy", ServerInfo.WebsiteDevelopedByLink, ServerInfo.WebsiteDevelopedBy]
+                </div>
+            </div>
+        </div>
+    </footer><!--/#footer-->
+
+    <environment names="Development">
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="~/Areas/User/js/site.js" asp-append-version="true"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
+                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-test="window.jQuery"
+                crossorigin="anonymous"
+                integrity="sha384-K+ctZQ+LL8q6tP7I94W+qzQsfRV2a+AfHIi9k8z8l9ggpc8X+Ytst4yBo/hH+8Fk">
+        </script>
+        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
+                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+                crossorigin="anonymous"
+                integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
+        </script>
+        <script src="~/Areas/User/js/site.min.js" asp-append-version="true"></script>
+    </environment>
+
+    @RenderSection("Scripts", required: false)
+
+</body>
+</html>

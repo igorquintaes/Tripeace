@@ -1,0 +1,68 @@
+﻿@model Tripeace.Application.Areas.Admin.ViewModels.Account.ListModel
+@{
+    ViewBag.Title = @Localizer["Title"];
+    var dirAvatar = "~" + ServerInfo.PlayerAvatarDir;
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">
+            @Localizer["Accounts"]
+        </h1>
+    </div>
+</div>
+<input type="hidden" id="active-header" value="players" />
+
+@Html.AntiForgeryToken()
+@Html.ValidationSummary()
+
+<div class="well container">
+    <form asp-action="List">
+        <!--// TODO: more filters -->
+
+        <div id="filter-results" class="col-md-4 col-md-offset-8">
+            <input asp-for="Query" class="search" placeholder="@Localizer["TypeYourSearch"]" />
+            <button type="submit" class="btn btn-sm"><i class="fa fa-search"></i>&thinsp;&thinsp;@Localizer["Search"]&thinsp;&thinsp;</button>
+        </div>
+    </form>
+</div>
+
+<br />
+<br />
+
+<div class="container">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>@Localizer["Image"]</th>
+                <th>@Localizer["AccountName"]</th>
+                <th>@Localizer["Email"]</th>
+                <th>@Localizer["Characters"]</th>
+                <th>@Localizer["Role"]</th>
+                <th>@Localizer["Action"]</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var account in Model.Data.Accounts)
+        {
+                <tr>
+                    <td>//TODO</td>
+                    <td>@account.AccountName</td>
+                    <td>@account.Email</td>
+                    <td style="white-space:pre;">@String.Join("\r\n", account.Characters)</td>
+                    <td>@account.Role</td>
+                    <td>//TODO</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div class="container pagination-container">
+    <cs-pager cs-paging-info="@Model.Paging"
+                cs-pagenumber-param="pageNumber"
+                asp-area="Admin"
+                asp-controller="Account"
+                asp-action="List"
+                asp-route-query="@Model.Query">
+    </cs-pager>
+</div>

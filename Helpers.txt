@@ -1,0 +1,23 @@
+-- Script to add some user to some role.
+-- Set the user name and the role name and run it.
+-- works on mysql
+
+set @var_username = '64651611';
+set @var_rolename = 'God';
+insert into aspnetuserroles (UserId, RoleId) 
+select UserId, RoleId
+from (
+	select u.Id as UserId from aspnetusers u
+	where u.NormalizedUserName = @var_username) 
+as UserId,
+	(
+	select r.Id as RoleId from aspnetroles r
+	where r.Name = @var_rolename) 
+as RoleId
+where not exists (
+    select * from aspnetuserroles asr
+    join aspnetroles ar on ar.Id = asr.RoleId
+    join aspnetusers au on au.Id = asr.UserId
+    where ar.Name = @var_rolename 
+    and au.NormalizedUserName = @var_username
+) limit 1;

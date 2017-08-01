@@ -1,0 +1,60 @@
+[
+  {
+    "outputFileName": "wwwroot/css/site.min.css",
+    "inputFiles": [
+      "wwwroot/css/site.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/site.min.js",
+    "inputFiles": [
+      "wwwroot/js/site.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    }
+  },
+  {
+    "outputFileName": "wwwroot/Areas/Admin/css/site.min.css",
+    "inputFiles": [
+      "wwwroot/Areas/Admin/css/site.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/Areas/User/js/site.min.js",
+    "inputFiles": [
+      "wwwroot/Areas/User/js/site.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/Areas/Admin/js/site.min.js",
+    "inputFiles": [
+      "wwwroot/Areas/Admin/js/site.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/morris/morris.min.js",
+    "inputFiles": [
+      "wwwroot/lib/morris/morris.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/morris/morris.min.css",
+    "inputFiles": [
+      "wwwroot/lib/morris/morris.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/Areas/Admin/js/morris-data.min.js",
+    "inputFiles": [
+      "wwwroot/Areas/Admin/js/morris-data.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/lib/morris/raphael.min.js",
+    "inputFiles": [
+      "wwwroot/lib/morris/raphael.js"
+    ]
+  }
+]
