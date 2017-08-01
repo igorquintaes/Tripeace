@@ -6,6 +6,9 @@
 *.user
 *.sln.docstates
 
+# New VS Version Folder
+.[Vv]s/
+
 # Build results
 
 [Dd]ebug/
