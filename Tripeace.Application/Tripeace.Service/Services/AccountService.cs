@@ -205,8 +205,9 @@ namespace Tripeace.Service.Services
             catch (LockedAccountException)
             {
                 account.AccountIdentity.LockoutEnd = DateTime.MaxValue;
-                throw;
             }
+
+            return;
         }
 
         public async Task UnlockAccount(int id)

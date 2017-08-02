@@ -211,11 +211,6 @@ namespace Tripeace.Application.Areas.Admin.Controllers
                 // id of an account that does not exist (dows not need to log, just an Admin can try to cheat lol)
                 return RedirectToAction("List");
             }
-            catch (LockedAccountException)
-            {
-                // Success, 'cause it is already locked after all lol
-                return RedirectToAction("List");
-            }
             catch (Exception ex)
             {
                 // Unknow error
@@ -248,7 +243,7 @@ namespace Tripeace.Application.Areas.Admin.Controllers
                 return RedirectToAction("List");
             }
 
-            // Unlocked!
+            // Unlocked
             return RedirectToAction("List");
         }
 
