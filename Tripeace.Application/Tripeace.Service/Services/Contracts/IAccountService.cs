@@ -16,5 +16,7 @@ namespace Tripeace.Service.Services.Contracts
         Task<IndexDTO> GetPlayerInfoIndex(string accountName);
         Task<AccountListDTO> GetAccountList(int? pageNumber, string searchKey);
         Task<int> GetCharactersQuantity(string accountName);
+        Task LockAccount(int id);
+        Task UnlockAccount(int id);
     }
 }

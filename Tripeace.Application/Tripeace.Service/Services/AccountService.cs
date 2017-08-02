@@ -99,6 +99,7 @@ namespace Tripeace.Service.Services
                 //await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
                 //    "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
                 await _signInManager.SignInAsync(user, isPersistent: false);
+                user.LockoutEnabled = true;
 
                 return null;
             }
@@ -148,7 +149,7 @@ namespace Tripeace.Service.Services
             {
                 searchKey = searchKey.ToLower();
 
-                users.Where(x =>
+                users = users.Where(x =>
                     x.Name.ToLower().Contains(searchKey) ||
                     x.Email.ToLower().Contains(searchKey) ||
                     x.Players.Any(y => y.Name.ToLower().Contains(searchKey)));
@@ -181,6 +182,43 @@ namespace Tripeace.Service.Services
             }
 
             return model;
+        }
+
+        public async Task LockAccount(int id)
+        {
+            var account = await _serverRepository.GetAccount(id);
+
+            if (account == null)
+            {
+                throw new InvalidIdException();
+            }
+
+            try
+            {
+                account.AccountIdentity.LockoutEnabled = true;
+
+                while (!(await _userManager.IsLockedOutAsync(account.AccountIdentity)))
+                {
+                    await _signInManager.PasswordSignInAsync(account.Name, "locktheuser010203" + DateTime.Now.ToString("ddMMyyysszzf"), false, true);
+                }
+            }
+            catch (LockedAccountException)
+            {
+                account.AccountIdentity.LockoutEnd = DateTime.MaxValue;
+                throw;
+            }
+        }
+
+        public async Task UnlockAccount(int id)
+        {
+            var account = await _serverRepository.GetAccount(id);
+
+            if (account == null)
+            {
+                throw new InvalidIdException();
+            }
+
+            account.AccountIdentity.LockoutEnd = null;
         }
     }
 }

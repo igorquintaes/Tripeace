@@ -280,3 +280,9 @@ ul.alert-dropdown {
 .pagination-container {
     text-align: center;
 }
+
+/************************** Tables *****************************/
+.table-buttons-space td a{
+    text-align: center;
+    margin: 2px;
+}

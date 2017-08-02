@@ -7,31 +7,39 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Tripeace.Service.Exceptions;
+using Tripeace.Application.MVC;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 
 namespace Tripeace.Application.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Route("admin/[controller]")]
     [Authorize(Roles = "GameMaster, God")]
-    public class AccountController : Controller
+    public class AccountController : BaseController<AccountController>
     {
         private IAccountService _accountService;
 
-        public AccountController(IAccountService accountService)
+        public AccountController(
+            IAccountService accountService,
+            IStringLocalizer<AccountController> localizer,
+            ILogger<AccountController> logger)
+            : base(localizer, logger)
         {
             _accountService = accountService;
         }
 
         public async Task<ActionResult> List(
             int? pageNumber,
-            string query = "")
+            string Query = "")
         {
             var model = new ListModel();
-            model.Data = await _accountService.GetAccountList(pageNumber, query);
+            model.Data = await _accountService.GetAccountList(pageNumber, Query);
             model.Paging.CurrentPage = pageNumber ?? 1;
             model.Paging.ItemsPerPage = ServerInfo.ItemsPerPage;
             model.Paging.TotalItems = model.Data.TotalResults;
-            model.Query = query;
+            model.Query = Query;
 
             return View("List", model);
         }
@@ -189,47 +197,60 @@ namespace Tripeace.Application.Areas.Admin.Controllers
         //        input);
         //}
 
-        //[HttpGet]
-        //[Authorize(Roles = "GameMaster, God")]
-        //public ActionResult Lock(int id)
-        //{
-        //    var user = RepoCommerce.GetUser(id);
+        [HttpGet]
+        [Route("[action]")]
+        [Authorize(Roles = "GameMaster, God")]
+        public async Task<ActionResult> Lock(int id)
+        {
+            try
+            {
+                await _accountService.LockAccount(id);
+            }
+            catch (InvalidIdException)
+            {
+                // id of an account that does not exist (dows not need to log, just an Admin can try to cheat lol)
+                return RedirectToAction("List");
+            }
+            catch (LockedAccountException)
+            {
+                // Success, 'cause it is already locked after all lol
+                return RedirectToAction("List");
+            }
+            catch (Exception ex)
+            {
+                // Unknow error
+                LogError(ex, "Error on Admin/Account/Lock");
+                return RedirectToAction("List");
+            }
 
-        //    if (user == null)
-        //    {
-        //        ModelState.AddModelError(
-        //            "user",
-        //            Messages.UnableToFindUser);
-        //    }
+            // Success
+            return RedirectToAction("List");
+        }
 
-        //    if (ModelState.IsValid)
-        //    {
-        //        Security.LockUser(user.UserName);
-        //    }
+        [HttpGet]
+        [Route("[action]")]
+        [Authorize(Roles = "GameMaster, God")]
+        public async Task<ActionResult> Unlock(int id)
+        {
+            try
+            {
+                await _accountService.UnlockAccount(id);
+            }
+            catch (InvalidIdException)
+            {
+                // id of an account that does not exist (dows not need to log, just an Admin can try to cheat lol)
+                return RedirectToAction("List");
+            }
+            catch (Exception ex)
+            {
+                // Unknow error
+                LogError(ex, "Error on Admin/Account/Lock");
+                return RedirectToAction("List");
+            }
 
-        //    return RedirectToAction("List");
-        //}
-
-        //[HttpGet]
-        //[Authorize(Roles = "GameMaster, God")]
-        //public ActionResult Unlock(int id)
-        //{
-        //    var user = RepoCommerce.GetUser(id);
-
-        //    if (user == null)
-        //    {
-        //        ModelState.AddModelError(
-        //            "user",
-        //            Messages.UnableToFindUser);
-        //    }
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        Security.UnlockUser(user.UserName);
-        //    }
-
-        //    return RedirectToAction("List");
-        //}
+            // Unlocked!
+            return RedirectToAction("List");
+        }
 
         //[HttpGet]
         //[Authorize(Roles = "God")]
