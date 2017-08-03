@@ -1,0 +1,11 @@
+﻿@if (ViewData["SuccessMessage"] != null &&
+     !String.IsNullOrEmpty(ViewData["SuccessMessage"].ToString()))
+{
+    <div class="alert alert-success">
+        <strong>
+            <i class="fa fa-check-circle"></i>
+            @Localizer["Success"]
+        </strong>
+        &nbsp;@ViewData["SuccessMessage"]
+    </div>
+}

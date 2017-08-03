@@ -52,17 +52,7 @@
         
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                @if (ViewData["SuccessMessage"] != null && 
-                    !String.IsNullOrEmpty(ViewData["SuccessMessage"].ToString()))
-                {
-                    <div class="alert alert-success">
-                        <strong>
-                            <i class="fa fa-check-circle"></i>
-                            @Localizer["Success"]
-                        </strong>
-                        &nbsp;@ViewData["SuccessMessage"]
-                    </div>
-                }
+                @await Html.PartialAsync("_SuccessAlert")
             </div>
         </div>
     </div>
