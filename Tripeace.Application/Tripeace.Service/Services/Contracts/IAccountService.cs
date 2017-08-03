@@ -20,5 +20,6 @@ namespace Tripeace.Service.Services.Contracts
         Task LockAccount(int id);
         Task UnlockAccount(int id);
         Task<AccountToAdminEditDTO> GetAccountToAdminEdit(int id);
+        Task SetAccountToAdminEdit(AccountToAdminEditDTO dto);
     }
 }

@@ -60,136 +60,51 @@ namespace Tripeace.Application.Areas.Admin.Controllers
             catch (InvalidIdException)
             {
                 // id of an account that does not exist
-                return RedirectToAction("Index");
+                return RedirectToAction("List");
             }
             catch (Exception ex)
             {
                 LogError(ex, "Error on Admin/Account/Edit");
-                return RedirectToAction("Index");
+                return RedirectToAction("List");
             }
         }
 
-        //[HttpPost]
-        //[Authorize(Roles = "GameMaster, God")]
-        //public ActionResult EditConfirm(UserEditForm input)
-        //{
-        //    if (input == null)
-        //    {
-        //        throw new ArgumentNullException("input");
-        //    }
+        [HttpPost]
+        [Route("admin/[controller]/Edit")]
+        [Authorize(Roles = "GameMaster, God")]
+        public async Task<ActionResult> Edit(EditModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var dto = Mapper<EditModel, AccountToAdminEditDTO>(model);
 
-        //    if (!TryValidateModel(input))
-        //    {
-        //        ModelState.AddModelError(
-        //            "ConfirmEmail",
-        //            Messages.UnexpectedErrorToValidate);
-        //    }
+                try
+                {
+                    await _accountService.SetAccountToAdminEdit(dto);
+                }
+                catch (InvalidIdException)
+                {
+                    return RedirectToAction("List");
+                }
+                catch (EmailInUseException)
+                {
+                    AddModelErrors(_localizer["EmailInUse"]);
+                    return View(model);
+                }
+                catch (AccountInUseException)
+                {
+                    AddModelErrors(_localizer["AccountInUse"]);
+                    return View(model);
+                }
+                catch (Exception ex)
+                {
+                    LogError(ex, "Error on /Admin/Account/Edit");
+                    AddModelErrors(_localizer["UnknownErrorContactAnAdmin"]);
+                }
+            }
 
-        //    var user = RepoCommerce.GetUser(input.Id);
-
-        //    if (ModelState.IsValid && user == null)
-        //    {
-        //        ModelState.AddModelError(
-        //            "ConfirmEmail",
-        //            Messages.UnableToFindUser);
-        //    }
-
-        //    // Valida e-mail (se ele for alterado)
-        //    if (ModelState.IsValid)
-        //    {
-        //        if ((!String.IsNullOrEmpty(input.ConfirmEmail)) && input.ConfirmEmail != input.Email)
-        //            ModelState.AddModelError(
-        //                "ConfirmEmail",
-        //                Messages.EmailDoesntMatch);
-        //    }
-
-        //    // Valida duplicidade de cadastro em outros usuários
-        //    if (ModelState.IsValid)
-        //    {
-        //        var userByEmail = RepoCommerce.GetUserByEmail(input.Email);
-        //        if (userByEmail != null && user.Email != userByEmail.Email)
-        //        {
-        //            ModelState.AddModelError(
-        //                "Email",
-        //                Messages.EmailAlreadyInUse);
-        //        }
-
-        //        var userByName = RepoCommerce.GetUserByUserName(input.UserName);
-        //        if ((userByName != null && user.UserName != userByName.UserName) ||
-        //            input.UserName == ConfigurationProvider.GetAppSetting(AppSetting.MasterLoginForTests))
-        //        {
-        //            ModelState.AddModelError(
-        //                "UserName",
-        //                Messages.UserNameAlreadyInUse);
-        //        }
-        //    }
-
-        //    // Valida se avatar é imagem
-        //    if (ModelState.IsValid)
-        //    {
-        //        if (!ImageService.IsImage(input.File))
-        //            ModelState.AddModelError(
-        //                "File",
-        //                Messages.FileIsNotAnImage);
-        //    }
-
-        //    // Valida tamanho (em espaço em disco) do avatar
-        //    if (ModelState.IsValid)
-        //    {
-        //        if (input.File != null && ImageService.IsValidLenght(input.File, 8 * 1024 * 1024))
-        //        {
-        //            ModelState.AddModelError(
-        //                "File",
-        //                string.Format(Messages.ImageSizeBiggerThanExpected, 1));
-        //        }
-        //    }
-
-        //    // Conclui Edição
-        //    if (ModelState.IsValid)
-        //    {
-        //        if (input.File != null)
-        //        {
-        //            var image = new Bitmap(Image.FromStream(input.File.InputStream));
-        //            var path = Server.MapPath("~/Content/Images/Site/Users/Avatar/");
-        //            var imageKey = Guid.NewGuid().ToString() + Path.GetExtension(input.File.FileName);
-
-        //            image = ImageService.ScaleBySquare(image, ImageDimensions.profileAvatar);
-        //            ImageService.SaveImage(path, imageKey, image);
-
-        //            image = ImageService.ScaleBySquare(image, ImageDimensions.thumbAvatar);
-        //            ImageService.SaveImage(path, imageKey, image, true);
-
-        //            if (!String.IsNullOrEmpty(user.Avatar))
-        //            {
-        //                path = Server.MapPath("~/Content/Images/Site/Users/Avatar/");
-        //                ImageService.DeleteImage(path, user.Avatar, true);
-        //            }
-
-        //            user.Avatar = imageKey;
-        //        }
-
-        //        if (!String.IsNullOrEmpty(input.ConfirmEmail))
-        //            user.Email = input.Email;
-
-        //        user.Quote = input.Quote;
-        //        user.UserName = input.UserName;
-        //        user.ReciveNews = input.ReciveNews;
-
-        //        Security.ChangeMemberRole
-        //            (user,
-        //             input.Role.ToString("F"));
-
-        //        RepoCommerce.CommitChanges();
-
-        //        SuccessMessage(Messages.UserSuccessfulUpdated);
-
-        //        return RedirectToAction("List");
-        //    }
-
-        //    return View(
-        //        "Edit",
-        //        input);
-        //}
+            return View(model);
+        }
 
         [HttpGet]
         [Route("[action]")]

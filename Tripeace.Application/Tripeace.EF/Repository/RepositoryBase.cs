@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 using Tripeace.Domain.Contracts;
 
 namespace Tripeace.EF.Repository
@@ -12,14 +13,14 @@ namespace Tripeace.EF.Repository
             this.Context = _context;
         }
 
-        public void CommitChanges()
+        public async Task CommitChanges()
         {
             if (this.Context == null)
             {
                 return;
             }
 
-            this.Context.SaveChanges();
+            await this.Context.SaveChangesAsync();
         }
     }
 }

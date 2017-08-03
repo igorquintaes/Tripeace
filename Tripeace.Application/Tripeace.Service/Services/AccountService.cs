@@ -184,7 +184,7 @@ namespace Tripeace.Service.Services
             return model;
         }
 
-        public async Task<AccountToAdminEditDTO> GetAccountToAdminEdit (int id)
+        public async Task<AccountToAdminEditDTO> GetAccountToAdminEdit(int id)
         {
             var account = await _serverRepository.GetAccount(id);
 
@@ -200,6 +200,43 @@ namespace Tripeace.Service.Services
                 Email = account.Email,
                 ReciveNews = account.AccountIdentity.News
             };
+        }
+
+        public async Task SetAccountToAdminEdit(AccountToAdminEditDTO dto)
+        {
+            var account = await _serverRepository.GetAccount(dto.Id);
+
+            if (account == null)
+            {
+                // Probably an invalid or outdated data, or maybe a someone trying to exploit the system.
+                throw new InvalidIdException();
+            }
+
+            var checkAccount = await _serverRepository.GetAccountByName(dto.Name);
+            if (checkAccount != null && 
+                checkAccount.Id != dto.Id)
+            {
+                // If tried to change to a account name that already exist
+                // and that is different from the edited account itself
+                throw new AccountInUseException();
+            }
+
+            var checkEmail = await _serverRepository.GetAccountByEmail(dto.Email);
+            if (checkEmail != null &&
+                checkEmail.Id != dto.Id)
+            {
+                // If tried to change to a e-mail that already exist
+                // and that is different from the edited account itself
+                throw new EmailInUseException();
+            }
+
+            account.Name = dto.Name;
+            account.Email = dto.Email;
+            account.AccountIdentity.News = dto.ReciveNews;
+            account.AccountIdentity.UserName = dto.Name;
+
+            await _userManager.UpdateAsync(account.AccountIdentity);
+            await _serverRepository.CommitChanges();
         }
 
         public async Task LockAccount(int id)
