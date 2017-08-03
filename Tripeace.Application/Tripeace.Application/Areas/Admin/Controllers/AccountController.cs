@@ -81,6 +81,7 @@ namespace Tripeace.Application.Areas.Admin.Controllers
                 try
                 {
                     await _accountService.SetAccountToAdminEdit(dto);
+                    ViewData["SuccessMessage"] = _localizer["SuccessMessage"];
                 }
                 catch (InvalidIdException)
                 {

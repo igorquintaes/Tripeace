@@ -23,8 +23,7 @@ namespace Tripeace.Service.Services
             IConfiguration configuration)
         {
             _serverRepository = serverRepository;
-            _configuration = configuration;
-            
+            _configuration = configuration;            
         }
 
         public async Task CreateNewCharacter(CreateCharacterDTO data, string accountName)
@@ -51,7 +50,7 @@ namespace Tripeace.Service.Services
             };
             
             account.Players.Add(character);
-            _serverRepository.CommitChanges();
+            await _serverRepository.CommitChanges();
         }
 
         public async Task<EditCharacterDTO> GetCharacterEdit(int id, string accountName)
@@ -104,7 +103,7 @@ namespace Tripeace.Service.Services
             character.Description = data.Description;
             character.IsVisible = data.IsVisible;
             
-            _serverRepository.CommitChanges();
+            await _serverRepository.CommitChanges();
         }
 
         public IEnumerable<Vocation> GetVocationsOnCreate()
