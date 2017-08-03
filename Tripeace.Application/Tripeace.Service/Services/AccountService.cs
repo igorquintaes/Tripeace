@@ -184,6 +184,24 @@ namespace Tripeace.Service.Services
             return model;
         }
 
+        public async Task<AccountToAdminEditDTO> GetAccountToAdminEdit (int id)
+        {
+            var account = await _serverRepository.GetAccount(id);
+
+            if (account == null)
+            {
+                throw new InvalidIdException();
+            }
+
+            return new AccountToAdminEditDTO()
+            {
+                Id = account.Id,
+                Name = account.Name,
+                Email = account.Email,
+                ReciveNews = account.AccountIdentity.News
+            };
+        }
+
         public async Task LockAccount(int id)
         {
             var account = await _serverRepository.GetAccount(id);
@@ -204,8 +222,9 @@ namespace Tripeace.Service.Services
             }
             catch (LockedAccountException)
             {
-                account.AccountIdentity.LockoutEnd = DateTime.MaxValue;
             }
+
+            account.AccountIdentity.LockoutEnd = DateTime.MaxValue;
 
             return;
         }

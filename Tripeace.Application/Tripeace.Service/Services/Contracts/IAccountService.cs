@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tripeace.Service.DTO;
 
 namespace Tripeace.Service.Services.Contracts
 {
@@ -18,5 +19,6 @@ namespace Tripeace.Service.Services.Contracts
         Task<int> GetCharactersQuantity(string accountName);
         Task LockAccount(int id);
         Task UnlockAccount(int id);
+        Task<AccountToAdminEditDTO> GetAccountToAdminEdit(int id);
     }
 }

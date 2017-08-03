@@ -11,6 +11,7 @@ using Tripeace.Service.Exceptions;
 using Tripeace.Application.MVC;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Tripeace.Service.DTO.Account;
 
 namespace Tripeace.Application.Areas.Admin.Controllers
 {
@@ -43,37 +44,30 @@ namespace Tripeace.Application.Areas.Admin.Controllers
 
             return View("List", model);
         }
+        
+        [HttpGet]
+        [Route("admin/[controller]/Edit")]
+        [Authorize(Roles = "GameMaster, God")]
+        public async Task<ActionResult> Edit(int id)
+        {
+            try
+            {
+                var dto = await _accountService.GetAccountToAdminEdit(id);
+                var model = Mapper<AccountToAdminEditDTO, EditModel>(dto);
 
-        // Todo! code based on a old guild website proejct
-
-        //[HttpGet]
-        //[Authorize(Roles = "GameMaster, God")]
-        //public ActionResult Edit(int id)
-        //{
-        //    var model = new UserEditForm();
-        //    var user = RepoCommerce.GetUser(id);
-
-        //    if (user == null)
-        //    {
-        //        ModelState.AddModelError(
-        //            "ConfirmEmail",
-        //            Messages.UnableToFindUser);
-        //    }
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        model.Id = user.Id;
-        //        model.UserName = user.UserName;
-        //        model.Email = user.Email;
-        //        model.ReciveNews = user.ReciveNews;
-        //        model.Quote = user.Quote;
-        //        model.AvatarURL = user.Avatar;
-
-        //        return View("Edit", model);
-        //    }
-
-        //    return RedirectToAction("List");
-        //}
+                return View(model);
+            }
+            catch (InvalidIdException)
+            {
+                // id of an account that does not exist
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                LogError(ex, "Error on Admin/Account/Edit");
+                return RedirectToAction("Index");
+            }
+        }
 
         //[HttpPost]
         //[Authorize(Roles = "GameMaster, God")]

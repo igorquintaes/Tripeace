@@ -69,7 +69,7 @@ namespace Tripeace.Application
             // Add the localization services to the services container
             services.AddLocalization(options => options.ResourcesPath = "Resources");
 
-            // Add Log
+            // Add HTTP Context
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             // Add framework services.
@@ -166,13 +166,13 @@ namespace Tripeace.Application
 
             Helpers.RolesData.SeedRoles(app.ApplicationServices).Wait();
 
-            if (!Directory.Exists(Path.Combine(env.WebRootPath, ServerInfo.PlayerAvatarDir)))
-                Directory.CreateDirectory(Path.Combine(env.WebRootPath, ServerInfo.PlayerAvatarDir));
+            if (!Directory.Exists(Path.Combine(env.ContentRootPath, ServerInfo.PlayerAvatarDir)))
+                Directory.CreateDirectory(Path.Combine(env.ContentRootPath, ServerInfo.PlayerAvatarDir));
         }
 
         private static bool IsLinux()
         {
-            return System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+            return RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
         }
     }
 }
