@@ -15,13 +15,13 @@
 <input type="hidden" id="active-header" value="accounts" />
 
 @Html.AntiForgeryToken()
-@Html.ValidationSummary()
 
 <form asp-action="Edit" asp-controller="Account" asp-area="Admin">
     <div class="form-horizontal col-md-10">
-        @Html.HiddenFor(x => x.Id)
 
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        @Html.HiddenFor(x => x.Id)
+        @await Html.PartialAsync("_Alerts")
+
         <div class="form-group">
             <label asp-for="Name" class="col-md-2 control-label"></label>
             <div class="col-md-10">
@@ -47,17 +47,14 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-default" />
+
+
+                <a asp-action="List" asp-controller="Account" asp-area="Admin" class="btn btn-default">
+                    <i class="fa fa-list-ul"></i>
+                    &nbsp;&nbsp;Back to List
+                </a>
             </div>
-        </div>
-        
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                @await Html.PartialAsync("_SuccessAlert")
-            </div>
+
         </div>
     </div>
 </form>
-
-<div>
-    <a asp-action="List" asp-controller="Account" asp-area="Admin"><i class="fa fa-list-ul"></i>&nbsp;&nbsp;Back to List</a>
-</div>

@@ -1,0 +1,34 @@
+﻿@if (!ViewData.ModelState.IsValid)
+{
+    /* Error Alert */
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <div class="alert alert-danger">
+                <strong>
+                    <i class="fa fa-warning"></i>
+                    @Localizer["Warning!"]
+                </strong>
+                <div asp-validation-summary="ModelOnly" style="margin-top: 10px;"></div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (ViewData["SuccessMessage"] != null &&
+    !String.IsNullOrEmpty(ViewData["SuccessMessage"].ToString()))
+{
+    /* Success Alert */
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <div class="alert alert-success">
+                <strong>
+                    <i class="fa fa-check-circle"></i>
+                    @Localizer["Success"]
+                </strong>
+                &nbsp;@ViewData["SuccessMessage"]
+            </div>
+        </div>
+    </div>
+}
