@@ -24,13 +24,21 @@
         });
     }),
 
-    $("#ban-submit").click(function () {
+    $("#ban-submit").click(function (e) {
         var dataType = 'application/json; charset=utf-8';
         var model = {
             "Id": parseInt($("#modal-ban-confirmation").attr("id-to-ban")),
             "Reason": $("#ban-reason").val(),
             "Date": $("#datetimepicker-ban").val()
         };
+
+        if (model.Date.length <= 0) {
+            $("#datetimepicker-ban").parent().addClass("has-error");
+
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+        }
 
         var json = JSON.stringify(model);
 
@@ -47,6 +55,7 @@
                 $("#modal-server-response-body").html(result.message);
                 $("#modal-server-response").modal("show");
 
+                $("#datetimepicker-ban").parent().removeClass("has-warning");
                 toogleButton("unban", model.Id);
             }
         });
