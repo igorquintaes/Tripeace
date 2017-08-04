@@ -20,17 +20,20 @@ namespace Tripeace.Service.Services
     public class AccountService : IAccountService
     {
         private readonly IServerRepository _serverRepository;
+        private readonly IBanService _banService;
         private readonly UserManager<AccountIdentity> _userManager;
         private readonly SignInManager<AccountIdentity> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
         public AccountService(
             IServerRepository serverRepository,
+            IBanService banService,
             UserManager<AccountIdentity> userManager,
             SignInManager<AccountIdentity> signInManager,
             RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
+            _banService = banService;
             _signInManager = signInManager;
             _roleManager = roleManager;
             _serverRepository = serverRepository;
@@ -168,6 +171,8 @@ namespace Tripeace.Service.Services
 
             foreach (var account in result)
             {
+                var isAccountBanned = await _banService.IsBanned(account.Id);
+
                 var accountListItem = new AccountListItemDTO()
                 {
                     Id = account.Id,
@@ -175,7 +180,11 @@ namespace Tripeace.Service.Services
                     Email = account.Email,
                     Characters = account.Players.Select(x => x.Name),
                     IsLocked = (await _userManager.IsLockedOutAsync(account.AccountIdentity)),
-                    Role = (await _userManager.GetRolesAsync(account.AccountIdentity)).Single()
+                    Role = (await _userManager.GetRolesAsync(account.AccountIdentity)).Single(),
+                    IsBanned = isAccountBanned,
+                    IsBannedReason = isAccountBanned 
+                        ? account.AccountBan.Reason 
+                        : String.Empty
                 };
 
                 model.Accounts.Add(accountListItem);

@@ -16,6 +16,8 @@ namespace Tripeace.Service.DTO.Account
         public string Email { get; set; }
         public string Role { get; set; }
         public bool IsLocked { get; set; }
+        public bool IsBanned { get; set; }
+        public string IsBannedReason { get; set; }
         public IEnumerable<string> Characters { get; set; }
     }
 }

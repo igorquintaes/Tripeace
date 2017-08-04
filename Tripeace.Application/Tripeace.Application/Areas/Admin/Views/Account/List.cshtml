@@ -64,14 +64,29 @@
                                     <td>
                                         @if (account.IsLocked)
                                         {
-                                            <a class="btn btn-sm btn-warning" asp-area="Admin" asp-controller="Account" asp-action="Unlock" asp-route-id="@account.Id">
-                                                <i class="fa fa-warning"></i>&thinsp; &thinsp;@Localizer["Unlock"]
+                                        <a class="btn btn-sm btn-info" asp-area="Admin" asp-controller="Account" asp-action="Unlock" asp-route-id="@account.Id">
+                                            <i class="fa fa-exclamation"></i>&thinsp; &thinsp;@Localizer["Unlock"]
+                                        </a>
+                                        }
+                                        else
+                                        {
+                                        <a class="btn btn-sm btn-info" asp-area="Admin" asp-controller="Account" asp-action="Lock" asp-route-id="@account.Id">
+                                            <i class="fa fa-exclamation"></i>&thinsp; &thinsp;@Localizer["Lock"]
+                                        </a>
+                                        }
+                                    </td>
+                                    <td>
+                                        <!-- TODO: ban reason tooltip -->
+                                        @if (account.IsBanned)
+                                        {
+                                            <a class="btn btn-sm btn-warning" asp-area="Admin" asp-controller="Account" asp-action="Unban" asp-route-id="@account.Id">
+                                                <i class="fa fa-warning"></i>&thinsp; &thinsp;@Localizer["Unban"]
                                             </a>
                                         }
                                         else
                                         {
-                                            <a class="btn btn-sm btn-warning" asp-area="Admin" asp-controller="Account" asp-action="Lock" asp-route-id="@account.Id">
-                                                <i class="fa fa-warning"></i>&thinsp; &thinsp;@Localizer["Lock"]
+                                            <a class="btn btn-sm btn-warning" asp-area="Admin" asp-controller="Account" asp-action="Ban" asp-route-id="@account.Id">
+                                                <i class="fa fa-warning"></i>&thinsp; &thinsp;@Localizer["Ban"]
                                             </a>
                                         }
                                     </td>

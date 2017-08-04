@@ -80,6 +80,7 @@ namespace Tripeace.Application
             // Add application services.
             services.AddScoped<IServerRepository, ServerRepository>();
             services.AddSingleton<IAccountService, AccountService>();
+            services.AddSingleton<IBanService, BanService>();
             services.AddSingleton<ICharacterService, CharacterService>();
             services.AddSingleton<IAccountMapper, AccountMapper>();
 

@@ -58,14 +58,9 @@ namespace Tripeace.Service.Services
             // Character as God, character as admin
             var bannedByPlayer =
                 bannedBy.Players.FirstOrDefault(x => x.GroupId == PlayerGroup.God) ??
-                bannedBy.Players.FirstOrDefault(x => x.GroupId == PlayerGroup.GameMaster);
-
-            if (bannedByPlayer == null)
-            {
-                // A character is mandatory (God or Game Master)
+                bannedBy.Players.FirstOrDefault(x => x.GroupId == PlayerGroup.GameMaster) ??
                 throw new RequiredAdminCharacterException();
-            }
-
+            
             // Check if there is a ban
             if (account.AccountBan != null)
             {
@@ -138,6 +133,7 @@ namespace Tripeace.Service.Services
             if (account.AccountBan.ExpiresAt <= DateTime.Now)
             {
                 SendAccountBanToHistory(account);
+                await _serverRepository.CommitChanges();
                 return false;
             }
 
