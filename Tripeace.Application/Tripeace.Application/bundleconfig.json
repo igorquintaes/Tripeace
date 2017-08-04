@@ -56,5 +56,11 @@
     "inputFiles": [
       "wwwroot/lib/morris/raphael.js"
     ]
+  },
+  {
+    "outputFileName": "wwwroot/Areas/Admin/Pages/Account/list.min.js",
+    "inputFiles": [
+      "wwwroot/Areas/Admin/Pages/Account/list.js"
+    ]
   }
 ]

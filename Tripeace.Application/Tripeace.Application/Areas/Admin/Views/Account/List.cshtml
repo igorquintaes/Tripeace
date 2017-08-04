@@ -79,15 +79,15 @@
                                         <!-- TODO: ban reason tooltip -->
                                         @if (account.IsBanned)
                                         {
-                                            <a class="btn btn-sm btn-warning" asp-area="Admin" asp-controller="Account" asp-action="Unban" asp-route-id="@account.Id">
+                                            <button class="btn btn-sm btn-warning btn-unban" data-id="@account.Id" data-toggle="modal" data-target="#modal-unban-confirmation">
                                                 <i class="fa fa-warning"></i>&thinsp; &thinsp;@Localizer["Unban"]
-                                            </a>
+                                            </button>
                                         }
                                         else
                                         {
-                                            <a class="btn btn-sm btn-warning" asp-area="Admin" asp-controller="Account" asp-action="Ban" asp-route-id="@account.Id">
+                                            <button class="btn btn-sm btn-warning btn-ban" data-id="@account.Id" data-toggle="modal" data-target="#modal-ban-confirmation">
                                                 <i class="fa fa-warning"></i>&thinsp; &thinsp;@Localizer["Ban"]
-                                            </a>
+                                            </button>
                                         }
                                     </td>
                                     <td>
@@ -104,6 +104,7 @@
         </tbody>
     </table>
 </div>
+
 <div class="pagination-container">
     <cs-pager cs-paging-info="@Model.Paging"
                 cs-pagenumber-param="pageNumber"
@@ -113,3 +114,52 @@
                 asp-route-query="@Model.Query">
     </cs-pager>
 </div>
+
+<div class="modal fade" id="modal-ban-confirmation" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="@Localizer["Close"]"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal-title">@Localizer["BanAccount"]</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form">
+                    <div class="form-group">
+                        <label for="message-text" class="control-label">@Localizer["InputBanReason"]</label>
+                        <textarea id="ban-reason" class="form-control" style="resize: none;"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">@Localizer["Cancel"]</button>
+                <button id="ban-submit" type="button" class="btn btn-primary" data-dismiss="modal">@Localizer["Submit"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<environment names="Development">
+    <script type="text/javascript" src="~/lib/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script type="text/javascript" src="~/Areas/Admin/Pages/Account/list.js" asp-append-version="true"></script>
+</environment>
+
+<environment names="Staging,Production">
+    <script type="text/javascript"
+            src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
+            asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+            asp-fallback-test="window.jQuery"
+            crossorigin="anonymous"
+            integrity="sha384-K+ctZQ+LL8q6tP7I94W+qzQsfRV2a+AfHIi9k8z8l9ggpc8X+Ytst4yBo/hH+8Fk">
+    </script>
+    <script type="text/javascript"
+            src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
+            asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+            asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+            crossorigin="anonymous"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
+    </script>
+    <script type="text/javascript" src="~/Areas/Admin/Pages/Account/list.min.js" asp-append-version="true"></script>
+</environment>

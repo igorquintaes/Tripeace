@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Tripeace.Domain.Contracts.Repositories;
 using Tripeace.Domain.Entities;
 using Tripeace.Domain.Enums;
+using Tripeace.Service.DTO.Account;
 using Tripeace.Service.Exceptions;
 using Tripeace.Service.Services.Contracts;
 
@@ -30,16 +31,16 @@ namespace Tripeace.Service.Services
             _roleManager = roleManager;
         }
 
-        public async Task BanAccount(int id, string reason, string accountNameAdmin)
+        public async Task BanAccount(BanDTO dto)
         {
-            var account = await _serverRepository.GetAccount(id);
+            var account = await _serverRepository.GetAccount(dto.Id);
             if (account == null)
             {
                 // Invalid Id request
                 throw new InvalidIdException();
             }
 
-            var bannedBy = await _serverRepository.GetAccountByName(accountNameAdmin);
+            var bannedBy = await _serverRepository.GetAccountByName(dto.AdminAccount);
             if (bannedBy == null)
             {
                 // Invalid admin account request
@@ -81,7 +82,7 @@ namespace Tripeace.Service.Services
             accountBan.Account = account;
             accountBan.BannedAt = DateTime.Now;
             accountBan.BannedBy = bannedByPlayer;
-            accountBan.Reason = reason ?? String.Empty;
+            accountBan.Reason = dto.Reason?.Trim() ?? String.Empty;
 
             account.AccountBan = accountBan;
 

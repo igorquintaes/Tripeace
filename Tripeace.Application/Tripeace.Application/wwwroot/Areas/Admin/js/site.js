@@ -20,9 +20,8 @@ $(document).ready(function ($) {
     $(window).resize(function () {
         page.wrapperHeight();
     });
+
     // dashboard menu
-    $(document).ready(function() {
-        var $active_item = $('#active-header').val();
-        $('#' + $active_item).addClass('active');
-    });
+    var $active_item = $('#active-header').val();
+    $('#' + $active_item).addClass('active');
 });
