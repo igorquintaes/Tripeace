@@ -13,8 +13,17 @@ namespace Tripeace.EF.Repository.Server
         public async Task<Account> GetAccount(int id)
         {
             return await Context.Accounts
+                .Where(x => x.Id == id)
                     .Include(x => x.Players)
                     .Include(x => x.AccountIdentity)
+                    .Include(x => x.AccountBan)
+                        .ThenInclude(x => x.Account)
+                    .Include(x => x.AccountBan)
+                        .ThenInclude(x => x.BannedBy)
+                    .Include(x => x.AccountBanHistory)
+                        .ThenInclude(x => x.Account)
+                    .Include(x => x.AccountBanHistory)
+                        .ThenInclude(x => x.BannedBy)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
@@ -24,14 +33,31 @@ namespace Tripeace.EF.Repository.Server
                 .Where(x => x.Name == accountName)
                     .Include(x => x.Players)
                     .Include(x => x.AccountIdentity)
+                    .Include(x => x.AccountBan)
+                        .ThenInclude(x => x.Account)
+                    .Include(x => x.AccountBan)
+                        .ThenInclude(x => x.BannedBy)
+                    .Include(x => x.AccountBanHistory)
+                        .ThenInclude(x => x.Account)
+                    .Include(x => x.AccountBanHistory)
+                        .ThenInclude(x => x.BannedBy)
                 .SingleOrDefaultAsync();
         }
 
         public async Task<Account> GetAccountByEmail(string email)
         {
             return await Context.Accounts
+                    .Where(x => x.Email == email)
                     .Include(x => x.Players)
                     .Include(x => x.AccountIdentity)
+                    .Include(x => x.AccountBan)
+                        .ThenInclude(x => x.Account)
+                    .Include(x => x.AccountBan)
+                        .ThenInclude(x => x.BannedBy)
+                    .Include(x => x.AccountBanHistory)
+                        .ThenInclude(x => x.Account)
+                    .Include(x => x.AccountBanHistory)
+                        .ThenInclude(x => x.BannedBy)
                 .FirstOrDefaultAsync(x => x.Email == email);
         }
 
@@ -40,6 +66,7 @@ namespace Tripeace.EF.Repository.Server
             return Context.Accounts
                     .Include(x => x.Players)
                     .Include(x => x.AccountIdentity)
+                    .Include(x => x.AccountBan)
                 .AsQueryable();
         }
     }

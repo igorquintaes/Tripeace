@@ -9,18 +9,20 @@
     $("#ban-submit").click(function () {
         var dataType = 'application/json; charset=utf-8';
         var model = {
-            Id: $("#modal-ban-confirmation").attr("id-to-ban"),
-            Reason: $("#ban-reason").val()
+            "Id": parseInt($("#modal-ban-confirmation").attr("id-to-ban")),
+            "Reason": $("#ban-reason").val()
         };
 
-        $('#modal-ban-confirmation').modal('hide')
+        var json = JSON.stringify(model);
+
+        $('#modal-ban-confirmation').modal('hide');
 
         $.ajax({
             type: 'POST',
             url: '/Admin/Account/Ban',
             dataType: 'json',
-            contentType: dataType,
-            data: model,
+            contentType: 'application/json',
+            data: json,
             success: function (result) {
                 $("#modal-server-response-title").html(result.title);
                 $("#modal-server-response-body").html(result.message);
