@@ -79,13 +79,15 @@
                                         <!-- TODO: ban reason tooltip -->
                                         @if (account.IsBanned)
                                         {
-                                            <button class="btn btn-sm btn-warning btn-unban" data-id="@account.Id" data-toggle="modal" data-target="#modal-unban-confirmation">
+                                            /*check list.js for ajax toogle*/
+                                            <button class="btn btn-sm btn-warning btn-ban-action" data-action="unban" data-id="@account.Id" data-toggle="modal" data-target="#modal-unban-confirmation">
                                                 <i class="fa fa-warning"></i>&thinsp; &thinsp;@Localizer["Unban"]
                                             </button>
                                         }
                                         else
                                         {
-                                            <button class="btn btn-sm btn-warning btn-ban" data-id="@account.Id" data-toggle="modal" data-target="#modal-ban-confirmation">
+                                            /*check list.js for ajax toogle*/
+                                            <button class="btn btn-sm btn-warning btn-ban-action" data-action="ban" data-id="@account.Id" data-toggle="modal" data-target="#modal-ban-confirmation">
                                                 <i class="fa fa-warning"></i>&thinsp; &thinsp;@Localizer["Ban"]
                                             </button>
                                         }
@@ -170,10 +172,17 @@
     </div>
 </div>
 
+<script type="text/javascript">
+    var localizer = {
+        BanButton: '@Localizer["Ban"]',
+        UnbanButton:'@Localizer["Unban"]'
+    };
+</script>
 
 
 <environment names="Development">
     <script type="text/javascript" src="~/Areas/Admin/Pages/Account/list.js" asp-append-version="true"></script>
+
 </environment>
 
 <environment names="Staging,Production">
