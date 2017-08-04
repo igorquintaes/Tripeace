@@ -5,10 +5,9 @@ using System.Threading.Tasks;
 
 namespace Tripeace.Application.Areas.Admin.ViewModels.Account
 {
-    public class BanModel
+    public class UnbanModel
     {
         public int Id { get; set; }
         public string Reason { get; set; }
-        public string Date { get; set; }
     }
 }

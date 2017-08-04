@@ -33,6 +33,11 @@ namespace Tripeace.Service.Services
 
         public async Task BanAccount(BanDTO dto)
         {
+            if (dto.Date <= DateTime.Now)
+            {
+                throw new InvalidDateTimeException();
+            }
+
             var account = await _serverRepository.GetAccount(dto.Id);
             if (account == null)
             {
@@ -83,6 +88,7 @@ namespace Tripeace.Service.Services
             accountBan.Account = account;
             accountBan.BannedAt = DateTime.Now;
             accountBan.BannedBy = bannedByPlayer;
+            accountBan.ExpiresAt = dto.Date;
             accountBan.Reason = dto.Reason?.Trim() ?? String.Empty;
 
             account.AccountBan = accountBan;
@@ -90,9 +96,9 @@ namespace Tripeace.Service.Services
             await _serverRepository.CommitChanges();
         }
 
-        public async Task UnbanAccount(int id, string reason)
+        public async Task UnbanAccount(UnbanDTO dto)
         {
-            var account = await _serverRepository.GetAccount(id);
+            var account = await _serverRepository.GetAccount(dto.Id);
             if (account == null)
             {
                 // Invalid Id request
@@ -105,14 +111,18 @@ namespace Tripeace.Service.Services
                 throw new NoAccountBanException();
             }
 
-            // Needs to move to history - It is still no banned
+            // Needs to move to history - It is still not banned
             if (account.AccountBan.ExpiresAt <= DateTime.Now)
             {
                 SendAccountBanToHistory(account);
+                await _serverRepository.CommitChanges();
+
                 throw new NoAccountBanException();
             }
-
+            
+            SendAccountBanToHistory(account, DateTime.Now);
             account.AccountBan = null;
+
             await _serverRepository.CommitChanges();
 
             // TODO: send an e-mail explaining the unban reason or just saying the account was unbanned.
@@ -142,13 +152,13 @@ namespace Tripeace.Service.Services
             return true;
         }
 
-        private void SendAccountBanToHistory(Account account)
+        private void SendAccountBanToHistory(Account account, DateTime? expiresTime = null)
         {
             var accountBanHistory = new AccountBanHistory();
             accountBanHistory.Account = account;
             accountBanHistory.BannedAt = account.AccountBan.BannedAt;
             accountBanHistory.BannedBy = account.AccountBan.BannedBy;
-            accountBanHistory.ExpiredAt = account.AccountBan.ExpiresAt;
+            accountBanHistory.ExpiredAt = expiresTime ?? account.AccountBan.ExpiresAt;
             accountBanHistory.Reason = account.AccountBan.Reason;
 
             account.AccountBanHistory.Add(accountBanHistory);

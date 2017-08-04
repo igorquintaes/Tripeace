@@ -4,11 +4,9 @@ using System.Text;
 
 namespace Tripeace.Service.DTO.Account
 {
-    public class BanDTO
+    public class UnbanDTO
     {
         public int Id { get; set; }
         public string Reason { get; set; }
-        public string AdminAccount { get; set; }
-        public DateTime Date { get; set; }
     }
 }

@@ -9,7 +9,7 @@ namespace Tripeace.Service.Services.Contracts
     public interface IBanService
     {
         Task BanAccount(BanDTO dto);
-        Task UnbanAccount(int id, string reason);
+        Task UnbanAccount(UnbanDTO dto);
         Task<bool> IsBanned(int id);
     }
 }

@@ -119,8 +119,8 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="@Localizer["Close"]"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="modal-title">@Localizer["BanAccount"]</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="@Localizer[" Close"]"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal-title-ban">@Localizer["BanAccount"]</h4>
             </div>
             <div class="modal-body">
                 <div class="form">
@@ -131,7 +131,7 @@
                     <div class="form-group">
                         <label for="message-text" class="control-label">@Localizer["ExpiresAt"]</label>
                         <div class='input-group date'>
-                            <input type='text' class="form-control" id='datetimepicker-ban'/>
+                            <input type='text' class="form-control" id='datetimepicker-ban' />
                             <span class="input-group-addon">
                                 <i class="fa fa-calendar"></i>
                             </span>
@@ -142,6 +142,29 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">@Localizer["Cancel"]</button>
                 <button id="ban-submit" type="button" class="btn btn-primary" data-dismiss="modal">@Localizer["Submit"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-unban-confirmation" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="@Localizer["Close"]"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal-title-unban">@Localizer["UnbanAccount"]</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form">
+                    <div class="form-group">
+                        <label for="message-text" class="control-label">@Localizer["InputUnbanReason"]</label>
+                        <textarea id="unban-reason" class="form-control" style="resize: none;"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">@Localizer["Cancel"]</button>
+                <button id="unban-submit" type="button" class="btn btn-primary" data-dismiss="modal">@Localizer["Submit"]</button>
             </div>
         </div>
     </div>
