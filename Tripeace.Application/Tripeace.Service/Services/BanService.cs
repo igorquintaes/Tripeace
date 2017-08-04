@@ -60,6 +60,7 @@ namespace Tripeace.Service.Services
             var bannedByPlayer =
                 bannedBy.Players.FirstOrDefault(x => x.GroupId == PlayerGroup.God) ??
                 bannedBy.Players.FirstOrDefault(x => x.GroupId == PlayerGroup.GameMaster) ??
+                bannedBy.Players.FirstOrDefault(x => x.GroupId == PlayerGroup.Player) ??
                 throw new RequiredAdminCharacterException();
             
             // Check if there is a ban

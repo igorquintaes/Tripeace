@@ -21,6 +21,10 @@ $(document).ready(function ($) {
         page.wrapperHeight();
     });
 
+    $(document).ready(function () {
+        $.fn.datepicker.defaults.language = $("#website-selected-language").val();
+    });
+
     // dashboard menu
     var $active_item = $('#active-header').val();
     $('#' + $active_item).addClass('active');

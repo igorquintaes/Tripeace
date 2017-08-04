@@ -6,6 +6,13 @@
         $("#ban-reason").val("");
     }),
 
+    $(function () {
+        $('#datetimepicker-ban').datepicker({
+            startDate: '+1d',
+            autoclose: true
+        });
+    }),
+
     $("#ban-submit").click(function () {
         var dataType = 'application/json; charset=utf-8';
         var model = {
