@@ -26,7 +26,7 @@ namespace Tripeace.Domain.Entities
         public AccountType Type { get; set; }
 
         public virtual ICollection<AccountBanHistory> AccountBanHistory { get; set; }
-        public virtual AccountBan AccountBans { get; set; }
+        public virtual AccountBan AccountBan { get; set; }
         public virtual AccountIdentity AccountIdentity { get; set; }
         public virtual ICollection<AccountViplist> AccountViplist { get; set; }
         public virtual ICollection<Player> Players { get; set; }

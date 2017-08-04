@@ -175,7 +175,7 @@ namespace Tripeace.Service.Services
                     Email = account.Email,
                     Characters = account.Players.Select(x => x.Name),
                     IsLocked = (await _userManager.IsLockedOutAsync(account.AccountIdentity)),
-                    Role = (await _userManager.GetRolesAsync(account.AccountIdentity)).FirstOrDefault()
+                    Role = (await _userManager.GetRolesAsync(account.AccountIdentity)).Single()
                 };
 
                 model.Accounts.Add(accountListItem);
@@ -276,6 +276,6 @@ namespace Tripeace.Service.Services
             }
 
             account.AccountIdentity.LockoutEnd = null;
-        }
+        }       
     }
 }

@@ -139,7 +139,7 @@ namespace Tripeace.EF
                     .HasColumnType("varchar(255)");
 
                 entity.HasOne(d => d.Account)
-                    .WithOne(p => p.AccountBans)
+                    .WithOne(p => p.AccountBan)
                     .HasForeignKey<AccountBan>(d => d.AccountId)
                     .HasConstraintName("account_bans_ibfk_1");
 
