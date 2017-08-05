@@ -1,20 +1,23 @@
 ﻿$(document).ready(function ($) {
-    $(".btn-ban-action").click(function () {
+    $(".btn-modal-action").click(function () {
         var accountId = $(this).attr("data-id");
         var action = $(this).attr("data-action");
 
         if (action == "ban") {
-            $("#modal-ban-confirmation").attr("id-to-ban", accountId);
+            $("#modal-ban-confirmation").attr("account-id", accountId);
             $("#ban-reason").val("");
+            $("#datetimepicker-ban").val("");
         }
 
         if (action == "unban") {
-            $("#modal-unban-confirmation").attr("id-to-unban", accountId);
+            $("#modal-unban-confirmation").attr("account-id", accountId);
             $("#unban-reason").val("");
         }
-    }),
 
-    $(".btn-unban").click(function () {
+        if (action == "delete")
+        {
+            $("#modal-delete-confirmation").attr("account-id", accountId);
+        }
     }),
 
     $(function () {
@@ -27,7 +30,7 @@
     $("#ban-submit").click(function (e) {
         var dataType = 'application/json; charset=utf-8';
         var model = {
-            "Id": parseInt($("#modal-ban-confirmation").attr("id-to-ban")),
+            "Id": parseInt($("#modal-ban-confirmation").attr("account-id")),
             "Reason": $("#ban-reason").val(),
             "Date": $("#datetimepicker-ban").val()
         };
@@ -64,7 +67,7 @@
     $("#unban-submit").click(function () {
         var dataType = 'application/json; charset=utf-8';
         var model = {
-            "Id": parseInt($("#modal-unban-confirmation").attr("id-to-unban")),
+            "Id": parseInt($("#modal-unban-confirmation").attr("account-id")),
             "Reason": $("#unban-reason").val(),
         };
 
@@ -88,8 +91,30 @@
         });
     });
 
+    $("#delete-submit").click(function () {
+        var dataType = 'application/json; charset=utf-8';
+        var id = parseInt($("#modal-delete-confirmation").attr("account-id"));
+
+        var json = JSON.stringify(id);
+
+        $('#modal-delete-confirmation').modal('hide');
+
+        $.ajax({
+            type: 'POST',
+            url: '/Admin/Account/Delete',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: json,
+            success: function (result) {
+                $("#modal-server-response-title").html(result.title);
+                $("#modal-server-response-body").html(result.message);
+                $("#modal-server-response").modal("show");
+            }
+        });
+    });
+
     function toogleButton(newButton, id) {
-        var button = $(".btn-ban-action[data-id='" + id + "']");
+        var button = $(".btn-modal-action[data-id='" + id + "'][data-action='ban'], .btn-modal-action[data-id='" + id + "'][data-action='unban']");
 
         if (newButton == "ban") {
             button.html('<i class="fa fa-warning"></i> &thinsp;&thinsp;' + localizer.BanButton);

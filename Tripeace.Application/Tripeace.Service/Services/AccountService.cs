@@ -271,6 +271,7 @@ namespace Tripeace.Service.Services
             }
 
             account.AccountIdentity.LockoutEnd = DateTime.MaxValue;
+            _serverRepository.CommitChanges();
 
             return;
         }
@@ -285,6 +286,19 @@ namespace Tripeace.Service.Services
             }
 
             account.AccountIdentity.LockoutEnd = null;
-        }       
+        }
+
+        public async Task DeleteAccount(int id)
+        {
+            var account = await _serverRepository.GetAccount(id);
+
+            if (account == null)
+            {
+                throw new InvalidIdException();
+            }
+
+            account = null;
+            await _serverRepository.CommitChanges();
+        }
     }
 }

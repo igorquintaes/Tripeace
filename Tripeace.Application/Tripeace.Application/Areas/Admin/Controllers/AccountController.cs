@@ -49,7 +49,7 @@ namespace Tripeace.Application.Areas.Admin.Controllers
 
             return View("List", model);
         }
-        
+
         [HttpGet]
         [Route("[action]")]
         [Authorize(Roles = "GameMaster, God")]
@@ -257,7 +257,7 @@ namespace Tripeace.Application.Areas.Admin.Controllers
             catch (Exception ex)
             {
                 // Unknow error
-                LogError(ex, "Error on Admin/Account/Ban");
+                LogError(ex, "Error on Admin/Account/Unban");
 
                 ajaxReturn.Title = _localizer["Error"];
                 ajaxReturn.Message = _localizer["UnknowError"];
@@ -270,35 +270,38 @@ namespace Tripeace.Application.Areas.Admin.Controllers
             return Json(ajaxReturn);
         }
 
-        //[HttpGet]
-        //[Authorize(Roles = "God")]
-        //public ActionResult Delete(int id)
-        //{
-        //    var user = RepoCommerce.GetUser(id);
+        [HttpPost]
+        [Route("[action]")]
+        [Authorize(Roles = "God")]
+        public async Task<ActionResult> Delete([FromBody]int id)
+        {
+            var ajaxReturn = new AjaxFeedbackModel();
+            try
+            {
+                await _accountService.DeleteAccount(id);
+            }
+            catch (InvalidIdException)
+            {
+                // Id of an account that does not exist. 
+                ajaxReturn.Title = _localizer["Error"];
+                ajaxReturn.Message = _localizer["InvalidAttempt"];
 
-        //    if (user == null)
-        //    {
-        //        ModelState.AddModelError(
-        //            "user",
-        //            Messages.UnableToFindUser);
-        //    }
+                return Json(ajaxReturn);
+            }
+            catch (Exception ex)
+            {
+                // Unknow error
+                LogError(ex, "Error on Admin/Account/Delete");
 
-        //    if (ModelState.IsValid)
-        //    {
-        //        if (!String.IsNullOrEmpty(user.Avatar))
-        //        {
-        //            var path = Server.MapPath("~/Content/Images/Site/Users/Avatar/");
-        //            ImageService.DeleteImage(path, user.Avatar, true);
-        //        }
+                ajaxReturn.Title = _localizer["Error"];
+                ajaxReturn.Message = _localizer["UnknowError"];
+                return Json(ajaxReturn);
+            }
 
-        //        Security.DeleteUser(user.UserName);
-        //        RepoCommerce.DeleteUser(user);
-        //        RepoCommerce.CommitChanges();
-
-        //        SuccessMessage(Messages.UserSuccessfulDeleted);
-        //    }
-
-        //    return RedirectToAction("List");
-        //}
+            // Success
+            ajaxReturn.Title = _localizer["Success"];
+            ajaxReturn.Message = _localizer["AccountDeletedSuccefully"];
+            return Json(ajaxReturn);
+        }
     }
 }
