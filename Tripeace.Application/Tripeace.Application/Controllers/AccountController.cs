@@ -9,7 +9,7 @@ using Tripeace.Application.ViewModels.Account;
 using Tripeace.Service.DTO.Account;
 using Tripeace.Service.DTO.Character;
 using Tripeace.Service.Exceptions;
-using Tripeace.Service.Services.Contracts;
+using Tripeace.Service.Services.Server.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -196,8 +196,10 @@ namespace Tripeace.Application.Controllers
                 return RedirectToAction("Index", "Account");
             }
 
-            var model = new CreateCharacter();
-            model.AllowedVocations = _characterService.GetVocationsOnCreate();
+            var model = new CreateCharacter()
+            {
+                AllowedVocations = _characterService.GetVocationsOnCreate()
+            };
 
             return View(model);
         }

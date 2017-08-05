@@ -1,5 +1,5 @@
 ﻿using Tripeace.Domain.Contracts.Repositories;
-using Tripeace.Service.Services.Contracts;
+using Tripeace.Service.Services.Server.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,18 +15,18 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Tripeace.Domain.Consts;
 using Microsoft.EntityFrameworkCore;
 
-namespace Tripeace.Service.Services
+namespace Tripeace.Service.Services.Server
 {
-    public class AccountService : IAccountService
+    public class AccountService : ServiceBase, IAccountService
     {
-        private readonly IServerRepository _serverRepository;
+        private readonly IAccountRepository _accountRepository;
         private readonly IBanService _banService;
         private readonly UserManager<AccountIdentity> _userManager;
         private readonly SignInManager<AccountIdentity> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
         public AccountService(
-            IServerRepository serverRepository,
+            IAccountRepository accountRepository,
             IBanService banService,
             UserManager<AccountIdentity> userManager,
             SignInManager<AccountIdentity> signInManager,
@@ -36,7 +36,7 @@ namespace Tripeace.Service.Services
             _banService = banService;
             _signInManager = signInManager;
             _roleManager = roleManager;
-            _serverRepository = serverRepository;
+            _accountRepository = accountRepository;
         }
 
         public async Task<IEnumerable<string>> TryLogin(LoginDTO data)
@@ -65,27 +65,31 @@ namespace Tripeace.Service.Services
 
         public async Task<IEnumerable<string>> TryRegisterAccount(RegisterDTO data)
         {
-            if (await _serverRepository.GetAccountByName(data.AccountName) != null)
+            if (await _accountRepository.GetByName(data.AccountName) != null)
             {
                 throw new AccountInUseException();
             }
 
-            if (await _serverRepository.GetAccountByName(data.Email) != null)
+            if (await _accountRepository.GetByEmail(data.Email) != null)
             {
                 throw new EmailInUseException();
             }
+
+            var account = new Account
+            {
+                Creation = DateTime.Now,
+                Email = data.Email,
+                Name = data.AccountName,
+                Password = GetHash(data.Password)
+            };
+
+            await _accountRepository.Insert(account);
 
             var user = new AccountIdentity
             {
                 News = data.AgreeReciveNews,
                 UserName = data.AccountName,
-                Account = new Account
-                {
-                    Creation = DateTime.Now,
-                    Email = data.Email,
-                    Name = data.AccountName,
-                    Password = GetHash(data.Password)
-                }
+                Account = account
             };
 
             var result = await _userManager.CreateAsync(user, data.Password);
@@ -114,7 +118,7 @@ namespace Tripeace.Service.Services
 
         public async Task<IndexDTO> GetPlayerInfoIndex(string accountName)
         {
-            var user = await _serverRepository.GetAccountByName(accountName);
+            var user = await _accountRepository.GetByName(accountName);
 
             return new IndexDTO()
             {
@@ -132,7 +136,7 @@ namespace Tripeace.Service.Services
             };
         }
 
-        // todo move to a security service
+        // TODO move to a security service
         private static string GetHash(string input)
         {
             return string.Join("", (SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes(input))).Select(x => x.ToString("X2")).ToArray());
@@ -140,13 +144,13 @@ namespace Tripeace.Service.Services
 
         public async Task<int> GetCharactersQuantity(string accountName)
         {
-            var account = await _serverRepository.GetAccountByName(accountName);
+            var account = await _accountRepository.GetByName(accountName);
             return account.Players.Count;
         }
 
         public async Task<AccountListDTO> GetAccountList(int? pageNumber, string searchKey)
         {
-            var users = _serverRepository.GetAccounts();
+            var users = _accountRepository.Query();
 
             if (!String.IsNullOrEmpty(searchKey))
             {
@@ -158,11 +162,13 @@ namespace Tripeace.Service.Services
                     x.Players.Any(y => y.Name.ToLower().Contains(searchKey)));
             }
             
-            var currentPageNum = pageNumber.HasValue ? pageNumber.Value : 1;
+            var currentPageNum = pageNumber ?? 1;
             var offset = (ServerInfo.ItemsPerPage * currentPageNum) - ServerInfo.ItemsPerPage;
 
-            var model = new AccountListDTO();
-            model.TotalResults = await users.CountAsync();
+            var model = new AccountListDTO()
+            {
+                TotalResults = await users.CountAsync()
+            };
 
             var result = await users
                 .Skip(offset)
@@ -195,7 +201,7 @@ namespace Tripeace.Service.Services
 
         public async Task<AccountToAdminEditDTO> GetAccountToAdminEdit(int id)
         {
-            var account = await _serverRepository.GetAccount(id);
+            var account = await _accountRepository.GetById(id);
 
             if (account == null)
             {
@@ -213,7 +219,7 @@ namespace Tripeace.Service.Services
 
         public async Task SetAccountToAdminEdit(AccountToAdminEditDTO dto)
         {
-            var account = await _serverRepository.GetAccount(dto.Id);
+            var account = await _accountRepository.GetById(dto.Id);
 
             if (account == null)
             {
@@ -221,7 +227,7 @@ namespace Tripeace.Service.Services
                 throw new InvalidIdException();
             }
 
-            var checkAccount = await _serverRepository.GetAccountByName(dto.Name);
+            var checkAccount = await _accountRepository.GetByName(dto.Name);
             if (checkAccount != null && 
                 checkAccount.Id != dto.Id)
             {
@@ -230,7 +236,7 @@ namespace Tripeace.Service.Services
                 throw new AccountInUseException();
             }
 
-            var checkEmail = await _serverRepository.GetAccountByEmail(dto.Email);
+            var checkEmail = await _accountRepository.GetByEmail(dto.Email);
             if (checkEmail != null &&
                 checkEmail.Id != dto.Id)
             {
@@ -245,12 +251,12 @@ namespace Tripeace.Service.Services
             account.AccountIdentity.UserName = dto.Name;
 
             await _userManager.UpdateAsync(account.AccountIdentity);
-            await _serverRepository.CommitChanges();
+            await _accountRepository.Update(account);
         }
 
         public async Task LockAccount(int id)
         {
-            var account = await _serverRepository.GetAccount(id);
+            var account = await _accountRepository.GetById(id);
 
             if (account == null)
             {
@@ -271,14 +277,14 @@ namespace Tripeace.Service.Services
             }
 
             account.AccountIdentity.LockoutEnd = DateTime.MaxValue;
-            _serverRepository.CommitChanges();
+            await _userManager.UpdateAsync(account.AccountIdentity);
 
             return;
         }
 
         public async Task UnlockAccount(int id)
         {
-            var account = await _serverRepository.GetAccount(id);
+            var account = await _accountRepository.GetById(id);
 
             if (account == null)
             {
@@ -286,19 +292,19 @@ namespace Tripeace.Service.Services
             }
 
             account.AccountIdentity.LockoutEnd = null;
+            await _userManager.UpdateAsync(account.AccountIdentity);
         }
 
         public async Task DeleteAccount(int id)
         {
-            var account = await _serverRepository.GetAccount(id);
+            var account = await _accountRepository.GetById(id);
 
             if (account == null)
             {
                 throw new InvalidIdException();
             }
 
-            account = null;
-            await _serverRepository.CommitChanges();
+            await _accountRepository.Delete(account);
         }
     }
 }

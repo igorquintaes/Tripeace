@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Tripeace.Domain.Contracts;
 using Tripeace.Service.DTO.Account;
 
-namespace Tripeace.Service.Services.Contracts
+namespace Tripeace.Service.Services.Server.Contracts
 {
-    public interface IBanService
+    public interface IBanService : IService
     {
         Task BanAccount(BanDTO dto);
         Task UnbanAccount(UnbanDTO dto);

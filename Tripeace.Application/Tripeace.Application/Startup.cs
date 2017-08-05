@@ -10,8 +10,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Tripeace.EF;
-using Tripeace.Service.Services.Contracts;
-using Tripeace.Service.Services;
+using Tripeace.Service.Services.Server.Contracts;
+using Tripeace.Service.Services.Server;
 using Tripeace.Domain.Contracts.Repositories;
 using Tripeace.EF.Repository.Server;
 using Tripeace.Domain.Entities;
@@ -78,7 +78,14 @@ namespace Tripeace.Application
                 .AddDataAnnotationsLocalization();
 
             // Add application services.
-            services.AddScoped<IServerRepository, ServerRepository>();
+            // TODO: try to understand why the hell generic IoC does not works
+            //services.AddScoped(typeof(IRepository<>), typeof(RepositoryBase<>));
+            //services.AddSingleton(typeof(IService), typeof(ServiceBase));
+
+            services.AddScoped<IAccountRepository, AccountRepository>();
+            services.AddScoped<IBanRepository, BanRepository>();
+            services.AddScoped<IBanHistoryRepository, BanHistoryRepository>();
+            services.AddScoped<IPlayerRepository, PlayerRepository>();
             services.AddSingleton<IAccountService, AccountService>();
             services.AddSingleton<IBanService, BanService>();
             services.AddSingleton<ICharacterService, CharacterService>();

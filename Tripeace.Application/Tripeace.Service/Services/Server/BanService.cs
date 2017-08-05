@@ -12,21 +12,28 @@ using Tripeace.Domain.Entities;
 using Tripeace.Domain.Enums;
 using Tripeace.Service.DTO.Account;
 using Tripeace.Service.Exceptions;
-using Tripeace.Service.Services.Contracts;
+using Tripeace.Service.Services.Server.Contracts;
 
-namespace Tripeace.Service.Services
+namespace Tripeace.Service.Services.Server
 {
-    public class BanService : IBanService
+    public class BanService : ServiceBase, IBanService
     {
-        private readonly IServerRepository _serverRepository;
+        private readonly IAccountRepository _accountRepository;
+        private readonly IBanRepository _banRepository;
+        private readonly IBanHistoryRepository _banHistoryRepository;
         private readonly UserManager<AccountIdentity> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
-        public BanService(IServerRepository serverRepository,
+        public BanService(
+            IAccountRepository accountRepository,
+            IBanRepository banRepository,
+            IBanHistoryRepository banHistoryRepository,
             UserManager<AccountIdentity> userManager,
             RoleManager<IdentityRole> roleManager)
         {
-            _serverRepository = serverRepository;
+            _accountRepository = accountRepository;
+            _banRepository = banRepository;
+            _banHistoryRepository = banHistoryRepository;
             _userManager = userManager;
             _roleManager = roleManager;
         }
@@ -38,14 +45,14 @@ namespace Tripeace.Service.Services
                 throw new InvalidDateTimeException();
             }
 
-            var account = await _serverRepository.GetAccount(dto.Id);
+            var account = await _accountRepository.GetById(dto.Id);
             if (account == null)
             {
                 // Invalid Id request
                 throw new InvalidIdException();
             }
 
-            var bannedBy = await _serverRepository.GetAccountByName(dto.AdminAccount);
+            var bannedBy = await _accountRepository.GetByName(dto.AdminAccount);
             if (bannedBy == null)
             {
                 // Invalid admin account request
@@ -80,25 +87,25 @@ namespace Tripeace.Service.Services
                 // Outdated ban - send it to history table
                 else
                 {
-                    SendAccountBanToHistory(account);
+                    await SendAccountBanToHistory(account);
                 }
             }
 
-            var accountBan = new AccountBan();
-            accountBan.Account = account;
-            accountBan.BannedAt = DateTime.Now;
-            accountBan.BannedBy = bannedByPlayer;
-            accountBan.ExpiresAt = dto.Date;
-            accountBan.Reason = dto.Reason?.Trim() ?? String.Empty;
-
-            account.AccountBan = accountBan;
-
-            await _serverRepository.CommitChanges();
+            var accountBan = new AccountBan()
+            {
+                Account = account,
+                BannedAt = DateTime.Now,
+                BannedBy = bannedByPlayer,
+                ExpiresAt = dto.Date,
+                Reason = dto.Reason?.Trim() ?? String.Empty
+            };
+            
+            await _banRepository.Insert(accountBan);
         }
 
         public async Task UnbanAccount(UnbanDTO dto)
         {
-            var account = await _serverRepository.GetAccount(dto.Id);
+            var account = await _accountRepository.GetById(dto.Id);
             if (account == null)
             {
                 // Invalid Id request
@@ -111,26 +118,21 @@ namespace Tripeace.Service.Services
                 throw new NoAccountBanException();
             }
 
-            // Needs to move to history - It is still not banned
+            // Outdated ban. Needs to move to history - It is still not banned
             if (account.AccountBan.ExpiresAt <= DateTime.Now)
             {
-                SendAccountBanToHistory(account);
-                await _serverRepository.CommitChanges();
-
+                await SendAccountBanToHistory(account);
                 throw new NoAccountBanException();
             }
             
-            SendAccountBanToHistory(account, DateTime.Now);
-            account.AccountBan = null;
-
-            await _serverRepository.CommitChanges();
+            await SendAccountBanToHistory(account, DateTime.Now);
 
             // TODO: send an e-mail explaining the unban reason or just saying the account was unbanned.
         }
 
         public async Task<bool> IsBanned(int id)
         {
-            var account = await _serverRepository.GetAccount(id);
+            var account = await _accountRepository.GetById(id);
             if (account == null)
             {
                 // Invalid Id request
@@ -144,24 +146,26 @@ namespace Tripeace.Service.Services
 
             if (account.AccountBan.ExpiresAt <= DateTime.Now)
             {
-                SendAccountBanToHistory(account);
-                await _serverRepository.CommitChanges();
+                await SendAccountBanToHistory(account);
                 return false;
             }
 
             return true;
         }
 
-        private void SendAccountBanToHistory(Account account, DateTime? expiresTime = null)
+        private async Task SendAccountBanToHistory(Account account, DateTime? expiresTime = null)
         {
-            var accountBanHistory = new AccountBanHistory();
-            accountBanHistory.Account = account;
-            accountBanHistory.BannedAt = account.AccountBan.BannedAt;
-            accountBanHistory.BannedBy = account.AccountBan.BannedBy;
-            accountBanHistory.ExpiredAt = expiresTime ?? account.AccountBan.ExpiresAt;
-            accountBanHistory.Reason = account.AccountBan.Reason;
+            var accountBanHistory = new AccountBanHistory
+            {
+                Account = account,
+                BannedAt = account.AccountBan.BannedAt,
+                BannedBy = account.AccountBan.BannedBy,
+                ExpiredAt = expiresTime ?? account.AccountBan.ExpiresAt,
+                Reason = account.AccountBan.Reason,
+            };
 
-            account.AccountBanHistory.Add(accountBanHistory);
+            await _banHistoryRepository.Insert(accountBanHistory);
+            await _banRepository.Delete(account.AccountBan);
         }
     }
 }

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Tripeace.Application.Areas.Admin.ViewModels.Account;
 using Tripeace.Domain.Consts;
-using Tripeace.Service.Services.Contracts;
+using Tripeace.Service.Services.Server.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using Tripeace.Service.DTO.Account;
 using Tripeace.Application.Areas.Admin.ViewModels.Shared;
 using System.Globalization;
+using cloudscribe.Web.Pagination;
 
 namespace Tripeace.Application.Areas.Admin.Controllers
 {
@@ -40,12 +41,19 @@ namespace Tripeace.Application.Areas.Admin.Controllers
             int? pageNumber,
             string Query = "")
         {
-            var model = new ListModel();
-            model.Data = await _accountService.GetAccountList(pageNumber, Query);
-            model.Paging.CurrentPage = pageNumber ?? 1;
-            model.Paging.ItemsPerPage = ServerInfo.ItemsPerPage;
-            model.Paging.TotalItems = model.Data.TotalResults;
-            model.Query = Query;
+            var data = await _accountService.GetAccountList(pageNumber, Query);
+
+            var model = new ListModel()
+            {
+                Data = data,
+                Query = Query,
+                Paging = new PaginationSettings()
+                {
+                    CurrentPage = pageNumber ?? 1,
+                    ItemsPerPage = ServerInfo.ItemsPerPage,
+                    TotalItems = data.TotalResults
+                }
+            };
 
             return View("List", model);
         }

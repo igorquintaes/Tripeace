@@ -1,7 +1,6 @@
 ﻿using Tripeace.Application.MVC.DataAnnotations;
 using Tripeace.Domain.Consts;
 using Tripeace.Domain.Enums;
-using Tripeace.Service.Services.Contracts;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

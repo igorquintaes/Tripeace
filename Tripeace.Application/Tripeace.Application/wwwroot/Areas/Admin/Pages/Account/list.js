@@ -3,18 +3,18 @@
         var accountId = $(this).attr("data-id");
         var action = $(this).attr("data-action");
 
-        if (action == "ban") {
+        if (action === "ban") {
             $("#modal-ban-confirmation").attr("account-id", accountId);
             $("#ban-reason").val("");
             $("#datetimepicker-ban").val("");
         }
 
-        if (action == "unban") {
+        if (action === "unban") {
             $("#modal-unban-confirmation").attr("account-id", accountId);
             $("#unban-reason").val("");
         }
 
-        if (action == "delete")
+        if (action === "delete")
         {
             $("#modal-delete-confirmation").attr("account-id", accountId);
         }
@@ -68,7 +68,7 @@
         var dataType = 'application/json; charset=utf-8';
         var model = {
             "Id": parseInt($("#modal-unban-confirmation").attr("account-id")),
-            "Reason": $("#unban-reason").val(),
+            "Reason": $("#unban-reason").val()
         };
 
         var json = JSON.stringify(model);
@@ -116,13 +116,13 @@
     function toogleButton(newButton, id) {
         var button = $(".btn-modal-action[data-id='" + id + "'][data-action='ban'], .btn-modal-action[data-id='" + id + "'][data-action='unban']");
 
-        if (newButton == "ban") {
+        if (newButton === "ban") {
             button.html('<i class="fa fa-warning"></i> &thinsp;&thinsp;' + localizer.BanButton);
             button.attr("data-target", "#modal-ban-confirmation");
             button.attr("data-action", "ban");
         }
 
-        if (newButton == "unban") {
+        if (newButton === "unban") {
             button.html('<i class="fa fa-warning"></i> &thinsp;&thinsp;' + localizer.UnbanButton);
             button.attr("data-target", "#modal-unban-confirmation");
             button.attr("data-action", "unban");

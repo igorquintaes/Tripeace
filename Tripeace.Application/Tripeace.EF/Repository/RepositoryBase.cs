@@ -1,26 +1,67 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Tripeace.Domain.Contracts;
 
 namespace Tripeace.EF.Repository
 {
-    public abstract class RepositoryBase : IRepository
+    public abstract class RepositoryBase<TEntity> : IRepository<TEntity> where TEntity : class
     {
         protected ServerContext Context { get; set; }
+        protected DbSet<TEntity> Entity;
 
         public RepositoryBase(ServerContext _context)
         {
-            this.Context = _context;
+            Context = _context;
+            Entity = Context.Set<TEntity>();
         }
 
-        public async Task CommitChanges()
+        public async Task Insert(TEntity entity)
         {
-            if (this.Context == null)
+            if (entity == null)
+            {
+                throw new ArgumentNullException("entity");
+            }
+
+            Entity.Add(entity);
+            await CommitChanges();
+        }
+
+        public async Task Update(TEntity entity)
+        {
+            if (entity == null)
+            {
+                throw new ArgumentNullException("entity");
+            }
+
+            await CommitChanges();
+        }
+
+        public async Task Delete(TEntity entity)
+        {
+            if (entity == null)
+            {
+                throw new ArgumentNullException("entity");
+            }
+
+            Entity.Remove(entity);
+            await CommitChanges();
+        }
+
+        public IQueryable<TEntity> Query()
+        {
+            return Entity.AsQueryable();
+        }
+
+        private async Task CommitChanges()
+        {
+            if (Context == null)
             {
                 return;
             }
 
-            await this.Context.SaveChangesAsync();
+            await Context.SaveChangesAsync();
         }
     }
 }

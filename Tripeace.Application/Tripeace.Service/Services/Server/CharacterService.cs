@@ -5,32 +5,36 @@ using Tripeace.Domain.Enums;
 using Tripeace.Service.DTO.Account;
 using Tripeace.Service.DTO.Character;
 using Tripeace.Service.Exceptions;
-using Tripeace.Service.Services.Contracts;
+using Tripeace.Service.Services.Server.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tripeace.Service.Services
+namespace Tripeace.Service.Services.Server
 {
-    public class CharacterService : ICharacterService
+    public class CharacterService : ServiceBase, ICharacterService
     {
-        private IServerRepository _serverRepository;
+        private IPlayerRepository _playerRepository;
+        private IAccountRepository _accountRepository;
         private IConfiguration _configuration; 
 
-        public CharacterService(IServerRepository serverRepository,
+        public CharacterService(
+            IPlayerRepository playerRepository,
+            IAccountRepository accountRepository,
             IConfiguration configuration)
         {
-            _serverRepository = serverRepository;
+            _playerRepository = playerRepository;
+            _accountRepository = accountRepository;
             _configuration = configuration;            
         }
 
         public async Task CreateNewCharacter(CreateCharacterDTO data, string accountName)
         {
-            var account = await _serverRepository.GetAccountByName(accountName);
+            var account = await _accountRepository.GetByName(accountName);
 
-            if (await _serverRepository.GetCharacterByName(data.Name) != null)
+            if (await _playerRepository.GetByName(data.Name) != null)
             {
                 throw new CharacterAlreadyRegisteredException();
             }
@@ -46,21 +50,21 @@ namespace Tripeace.Service.Services
                 Name = data.Name,
                 Vocation = data.Vocation,
                 Conditions = new byte[8],
-                Sex = data.Sex
+                Sex = data.Sex,
+                Account = account
             };
             
-            account.Players.Add(character);
-            await _serverRepository.CommitChanges();
+            await _playerRepository.Insert(character);
         }
 
         public async Task<EditCharacterDTO> GetCharacterEdit(int id, string accountName)
         {
-            var account = await _serverRepository.GetAccountByName(accountName);
-            var character = account.Players.FirstOrDefault(x => x.Id == id);
+            var account = await _accountRepository.GetByName(accountName);
+            var character = account.Players.SingleOrDefault(x => x.Id == id);
 
             if (character == null)
             {
-                var characterExists = await _serverRepository.GetCharacter(id);
+                var characterExists = await _playerRepository.GetById(id);
                 if (characterExists == null)
                 {
                     throw new InvalidIdException();
@@ -84,12 +88,12 @@ namespace Tripeace.Service.Services
 
         public async Task UpdateCharacter(EditCharacterDTO data, string accountName)
         {
-            var account = await _serverRepository.GetAccountByName(accountName);
-            var character = account.Players.FirstOrDefault(x => x.Id == data.Id);
+            var account = await _accountRepository.GetByName(accountName);
+            var character = account.Players.SingleOrDefault(x => x.Id == data.Id);
 
             if (character == null)
             {
-                var characterExists = await _serverRepository.GetCharacter(data.Id);
+                var characterExists = await _playerRepository.GetById(data.Id);
                 if (characterExists == null)
                 {
                     throw new InvalidIdException();
@@ -102,8 +106,8 @@ namespace Tripeace.Service.Services
 
             character.Description = data.Description;
             character.IsVisible = data.IsVisible;
-            
-            await _serverRepository.CommitChanges();
+
+            await _playerRepository.Update(character);
         }
 
         public IEnumerable<Vocation> GetVocationsOnCreate()

@@ -5,10 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Tripeace.Domain.Contracts;
 
-namespace Tripeace.Service.Services.Contracts
+namespace Tripeace.Service.Services.Server.Contracts
 {
-    public interface ICharacterService
+    public interface ICharacterService : IService
     {
         Task CreateNewCharacter(CreateCharacterDTO data, string accountName);
         Task<EditCharacterDTO> GetCharacterEdit(int id, string accountName);
