@@ -17,7 +17,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Tripeace.Service.Services.Server
 {
-    public class AccountService : ServiceBase, IAccountService
+    public class AccountService : ServiceBase<Account>, IAccountService
     {
         private readonly IAccountRepository _accountRepository;
         private readonly IBanService _banService;
@@ -276,7 +276,7 @@ namespace Tripeace.Service.Services.Server
             {
             }
 
-            account.AccountIdentity.LockoutEnd = DateTime.MaxValue;
+            account.AccountIdentity.LockoutEnd = DateTime.Now.AddYears(10);
             await _userManager.UpdateAsync(account.AccountIdentity);
 
             return;

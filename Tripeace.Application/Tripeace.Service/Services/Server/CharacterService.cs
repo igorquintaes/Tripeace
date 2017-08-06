@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Tripeace.Service.Services.Server
 {
-    public class CharacterService : ServiceBase, ICharacterService
+    public class CharacterService : ServiceBase<Player>, ICharacterService
     {
         private IPlayerRepository _playerRepository;
         private IAccountRepository _accountRepository;

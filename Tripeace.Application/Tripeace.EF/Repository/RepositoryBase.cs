@@ -6,7 +6,7 @@ using Tripeace.Domain.Contracts;
 
 namespace Tripeace.EF.Repository
 {
-    public abstract class RepositoryBase<TEntity> : IRepository<TEntity> where TEntity : class
+    public class RepositoryBase<TEntity> : IRepository<TEntity> where TEntity : class
     {
         protected ServerContext Context { get; set; }
         protected DbSet<TEntity> Entity;

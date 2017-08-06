@@ -20,7 +20,6 @@ namespace Tripeace.Application.Helpers
     [LayoutRenderer("aspnet-request-ip")]
     public class AspNetRequestIpLayoutRenderer : AspNetLayoutRendererBase
     {
-
         protected override void DoAppend(StringBuilder builder, LogEventInfo logEvent)
         {
             var httpContext = HttpContextAccessor.HttpContext;

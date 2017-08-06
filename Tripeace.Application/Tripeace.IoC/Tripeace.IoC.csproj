@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="cloudscribe.Web.Pagination" Version="1.1.4" />
+    <PackageReference Include="microsoft.aspnetcore.diagnostics" Version="1.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.3" />
+    <PackageReference Include="microsoft.aspnetcore.staticfiles" Version="1.1.2" />
+    <PackageReference Include="microsoft.extensions.logging.debug" Version="1.1.2" />
+    <PackageReference Include="microsoft.visualstudio.web.browserlink" Version="1.1.2" />
+    <PackageReference Include="nlog.web.aspnetcore" Version="4.4.1" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="1.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tripeace.Domain\Tripeace.Domain.csproj" />
+    <ProjectReference Include="..\Tripeace.EF\Tripeace.EF.csproj" />
+    <ProjectReference Include="..\Tripeace.Service\Tripeace.Service.csproj" />
+  </ItemGroup>
+
+</Project>

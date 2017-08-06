@@ -5,7 +5,7 @@ using Tripeace.Domain.Contracts;
 
 namespace Tripeace.Service.Services
 {
-    public abstract class ServiceBase : IService
+    public class ServiceBase<TEntity> : IService<TEntity> where TEntity : class
     {
     }
 }

@@ -1,15 +1,16 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Tripeace.Domain.Enums;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Tripeace.Domain.Enums;
 
-namespace Tripeace.Application.Helpers
+namespace Tripeace.IoC
 {
-    public static class RolesData
+    public static class DatabaseManager
     {
         private static readonly string[] Roles = new string[]
         {
@@ -20,8 +21,10 @@ namespace Tripeace.Application.Helpers
             AccountType.God.ToString(),
         };
 
-        public static async Task SeedRoles(IServiceProvider serviceProvider)
+        public static async Task SeedRoles(IApplicationBuilder app)
         {
+            var serviceProvider = app.ApplicationServices;
+
             using (var serviceScope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();

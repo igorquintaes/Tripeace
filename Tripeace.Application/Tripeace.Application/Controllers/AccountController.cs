@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Tripeace.Application.Helpers.Mappers.Contracts;
 using Tripeace.Application.MVC;
 using Tripeace.Application.ViewModels.Account;
 using Tripeace.Service.DTO.Account;
@@ -22,11 +21,9 @@ namespace Tripeace.Application.Controllers
     {
         private readonly IAccountService _accountService;
         private readonly ICharacterService _characterService;
-        private readonly IAccountMapper _accountMapper;
 
         public AccountController(
             IAccountService accountService,
-            IAccountMapper accountMapper,
             ICharacterService characterService,
             IStringLocalizer<AccountController> localizer,
             ILogger<AccountController> logger)
@@ -34,7 +31,6 @@ namespace Tripeace.Application.Controllers
         {
             _accountService = accountService;
             _characterService = characterService;
-            _accountMapper = accountMapper;
         }
 
         //
@@ -45,8 +41,21 @@ namespace Tripeace.Application.Controllers
             try
             {
                 var dto = await _accountService.GetPlayerInfoIndex(User.Identity.Name);
-                var data = _accountMapper.IndexMapper(dto);
-                data.IsNewAccount = newAccount;
+                var data = new Index()
+                {
+                    AccountName = dto.AccountName,
+                    Email = dto.Email,
+                    IsNewAccount = newAccount,
+                    Characters = dto.Characters.Select(x => new IndexPlayer()
+                    {
+                        Id = x.Id,
+                        Description = x.Description,
+                        Level = x.Level,
+                        Name = x.Name,
+                        Sex = x.Sex,
+                        Vocation = x.Vocation
+                    })
+                };
 
                 return View(data);
             }

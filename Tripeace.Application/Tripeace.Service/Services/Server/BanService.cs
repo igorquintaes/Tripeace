@@ -16,7 +16,7 @@ using Tripeace.Service.Services.Server.Contracts;
 
 namespace Tripeace.Service.Services.Server
 {
-    public class BanService : ServiceBase, IBanService
+    public class BanService : ServiceBase<AccountBan>, IBanService
     {
         private readonly IAccountRepository _accountRepository;
         private readonly IBanRepository _banRepository;

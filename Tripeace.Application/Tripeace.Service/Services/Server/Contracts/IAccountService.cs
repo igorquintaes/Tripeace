@@ -7,10 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Tripeace.Service.DTO;
 using Tripeace.Domain.Contracts;
+using Tripeace.Domain.Entities;
 
 namespace Tripeace.Service.Services.Server.Contracts
 {
-    public interface IAccountService : IService
+    public interface IAccountService : IService<Account>
     {
         Task<IEnumerable<string>> TryLogin(LoginDTO data);
         Task LogOff();
