@@ -74,6 +74,9 @@ namespace Tripeace.Application.Controllers
         [AllowAnonymous]
         public IActionResult LogIn(string returnUrl = null)
         {
+            if (!String.IsNullOrEmpty(User?.Identity?.Name))
+                return RedirectToAction("Index");
+
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
@@ -84,6 +87,9 @@ namespace Tripeace.Application.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> LogIn(Login model, string returnUrl = null)
         {
+            if (!String.IsNullOrEmpty(User?.Identity?.Name))
+                return RedirectToAction("Index");
+
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
@@ -150,6 +156,9 @@ namespace Tripeace.Application.Controllers
         [AllowAnonymous]
         public IActionResult Register()
         {
+            if (!String.IsNullOrEmpty(User?.Identity?.Name))
+                return RedirectToAction("Index");
+
             return View();
         }
 
@@ -159,6 +168,9 @@ namespace Tripeace.Application.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register(Register model)
         {
+            if (!String.IsNullOrEmpty(User?.Identity?.Name))
+                return RedirectToAction("Index");
+
             if (ModelState.IsValid)
             {
                 var dto = Mapper<Register, RegisterDTO>(model);

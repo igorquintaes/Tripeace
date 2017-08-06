@@ -178,6 +178,11 @@ namespace Tripeace.Service.Services.Server
             foreach (var account in result)
             {
                 var isAccountBanned = await _banService.IsBanned(account.Id);
+                var isAccountLocked = await _userManager.IsLockedOutAsync(account.AccountIdentity);
+                var AccountRole = (await _userManager.GetRolesAsync(account.AccountIdentity)).Single();
+                var banReason = isAccountBanned
+                        ? account.AccountBan.Reason
+                        : String.Empty;
 
                 var accountListItem = new AccountListItemDTO()
                 {
@@ -185,12 +190,10 @@ namespace Tripeace.Service.Services.Server
                     AccountName = account.Name,
                     Email = account.Email,
                     Characters = account.Players.Select(x => x.Name),
-                    IsLocked = (await _userManager.IsLockedOutAsync(account.AccountIdentity)),
-                    Role = (await _userManager.GetRolesAsync(account.AccountIdentity)).Single(),
+                    IsLocked = isAccountLocked,
+                    Role = AccountRole,
                     IsBanned = isAccountBanned,
-                    IsBannedReason = isAccountBanned 
-                        ? account.AccountBan.Reason 
-                        : String.Empty
+                    IsBannedReason = banReason
                 };
 
                 model.Accounts.Add(accountListItem);

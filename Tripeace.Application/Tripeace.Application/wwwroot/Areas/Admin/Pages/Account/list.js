@@ -109,6 +109,11 @@
                 $("#modal-server-response-title").html(result.title);
                 $("#modal-server-response-body").html(result.message);
                 $("#modal-server-response").modal("show");
+
+                var baseRow = $(".btn-modal-action[data-id='" + id + "'][data-action='delete']").closest('tr.account-data');
+                baseRow.html("<td>" + localizer.DeletedRow + "</td>");
+                baseRow.addClass("danger")
+                baseRow.find("td").attr("colspan", "100%");
             }
         });
     });

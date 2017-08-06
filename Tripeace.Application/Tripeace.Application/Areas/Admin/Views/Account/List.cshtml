@@ -45,7 +45,7 @@
         <tbody>
             @foreach (var account in Model.Data.Accounts)
         {
-                <tr>
+                <tr class="account-data">
                     <td>//TODO</td>
                     <td>@account.AccountName</td>
                     <td>@account.Email</td>
@@ -198,7 +198,8 @@
 <script type="text/javascript">
     var localizer = {
         BanButton: '@Localizer["Ban"]',
-        UnbanButton:'@Localizer["Unban"]'
+        UnbanButton:'@Localizer["Unban"]',
+        DeletedRow:'@Localizer["DeletedRow"]'
     };
 </script>
 
