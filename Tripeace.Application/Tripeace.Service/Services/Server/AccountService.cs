@@ -202,33 +202,46 @@ namespace Tripeace.Service.Services.Server
             return model;
         }
 
-        public async Task<AccountToAdminEditDTO> GetAccountToAdminEdit(int id)
+        public async Task<AccountToAdminEditDTO> GetAccountToAdminEdit(int id, string accountWhoRequested)
         {
-            var account = await _accountRepository.GetById(id);
-
-            if (account == null)
+            var accountToEdit = await _accountRepository.GetById(id);
+            if (accountToEdit == null)
             {
                 throw new InvalidIdException();
             }
 
+            var whoRequested = await _accountRepository.GetByName(accountWhoRequested);
+            if (whoRequested == null)
+            {
+                throw new InvalidIdException();
+            }
+
+            await AssureAdminAuthorization(accountToEdit, whoRequested);
+
             return new AccountToAdminEditDTO()
             {
-                Id = account.Id,
-                Name = account.Name,
-                Email = account.Email,
-                ReciveNews = account.AccountIdentity.News
+                Id = accountToEdit.Id,
+                Name = accountToEdit.Name,
+                Email = accountToEdit.Email,
+                ReciveNews = accountToEdit.AccountIdentity.News
             };
         }
 
         public async Task SetAccountToAdminEdit(AccountToAdminEditDTO dto)
         {
-            var account = await _accountRepository.GetById(dto.Id);
-
-            if (account == null)
+            var accountToEdit = await _accountRepository.GetById(dto.Id);
+            if (accountToEdit == null)
             {
                 // Probably an invalid or outdated data, or maybe a someone trying to exploit the system.
                 throw new InvalidIdException();
             }
+            var whoRequested = await _accountRepository.GetByName(dto.AccountWhoRequested);
+            if (whoRequested == null)
+            {
+                throw new InvalidIdException();
+            }
+
+            await AssureAdminAuthorization(accountToEdit, whoRequested);
 
             var checkAccount = await _accountRepository.GetByName(dto.Name);
             if (checkAccount != null && 
@@ -248,66 +261,112 @@ namespace Tripeace.Service.Services.Server
                 throw new EmailInUseException();
             }
 
-            account.Name = dto.Name;
-            account.Email = dto.Email;
-            account.AccountIdentity.News = dto.ReciveNews;
-            account.AccountIdentity.UserName = dto.Name;
+            accountToEdit.Name = dto.Name;
+            accountToEdit.Email = dto.Email;
+            accountToEdit.AccountIdentity.News = dto.ReciveNews;
+            accountToEdit.AccountIdentity.UserName = dto.Name;
 
-            await _userManager.UpdateAsync(account.AccountIdentity);
-            await _accountRepository.Update(account);
+            await _userManager.UpdateAsync(accountToEdit.AccountIdentity);
+            await _accountRepository.Update(accountToEdit);
         }
 
-        public async Task LockAccount(int id)
+        public async Task LockAccount(int id, string accountWhoRequested)
         {
-            var account = await _accountRepository.GetById(id);
-
-            if (account == null)
+            var accountToLock = await _accountRepository.GetById(id);
+            if (accountToLock == null)
             {
                 throw new InvalidIdException();
             }
 
+            var whoRequested = await _accountRepository.GetByName(accountWhoRequested);
+            if (whoRequested == null)
+            {
+                throw new InvalidIdException();
+            }
+
+            await AssureAdminAuthorization(accountToLock, whoRequested);
+
             try
             {
-                account.AccountIdentity.LockoutEnabled = true;
+                accountToLock.AccountIdentity.LockoutEnabled = true;
 
-                while (!(await _userManager.IsLockedOutAsync(account.AccountIdentity)))
+                while (!(await _userManager.IsLockedOutAsync(accountToLock.AccountIdentity)))
                 {
-                    await _signInManager.PasswordSignInAsync(account.Name, "locktheuser010203" + DateTime.Now.ToString("ddMMyyysszzf"), false, true);
+                    await _signInManager.PasswordSignInAsync(accountToLock.Name, "locktheuser010203" + DateTime.Now.ToString("ddMMyyysszzf"), false, true);
                 }
             }
             catch (LockedAccountException)
             {
             }
 
-            account.AccountIdentity.LockoutEnd = DateTime.Now.AddYears(10);
-            await _userManager.UpdateAsync(account.AccountIdentity);
+            accountToLock.AccountIdentity.LockoutEnd = DateTime.Now.AddYears(10);
+            await _userManager.UpdateAsync(accountToLock.AccountIdentity);
 
             return;
         }
 
-        public async Task UnlockAccount(int id)
+        public async Task UnlockAccount(int id, string accountWhoRequested)
         {
-            var account = await _accountRepository.GetById(id);
-
-            if (account == null)
+            var accountToUnlock = await _accountRepository.GetById(id);
+            if (accountToUnlock == null)
             {
                 throw new InvalidIdException();
             }
 
-            account.AccountIdentity.LockoutEnd = null;
-            await _userManager.UpdateAsync(account.AccountIdentity);
+            var whoRequested = await _accountRepository.GetByName(accountWhoRequested);
+            if (whoRequested == null)
+            {
+                throw new InvalidIdException();
+            }
+
+            await AssureAdminAuthorization(accountToUnlock, whoRequested);
+
+            accountToUnlock.AccountIdentity.LockoutEnd = null;
+            await _userManager.UpdateAsync(accountToUnlock.AccountIdentity);
         }
 
-        public async Task DeleteAccount(int id)
+        public async Task DeleteAccount(int id, string accountWhoRequested)
         {
-            var account = await _accountRepository.GetById(id);
-
-            if (account == null)
+            var accountToDelete = await _accountRepository.GetById(id);
+            if (accountToDelete == null)
             {
                 throw new InvalidIdException();
             }
 
-            await _accountRepository.Delete(account);
+            var whoRequested = await _accountRepository.GetByName(accountWhoRequested);
+            if (whoRequested == null)
+            {
+                throw new InvalidIdException();
+            }
+
+            await AssureAdminAuthorization(accountToDelete, whoRequested);
+
+            await _accountRepository.Delete(accountToDelete);
+        }
+
+        public async Task AssureAdminAuthorization(Account accountTarget, Account accountWhoRequested)
+        {
+            var accountWhoRequestedRole = (await _userManager.GetRolesAsync(accountWhoRequested.AccountIdentity)).Single();
+            var accountTargetRole = (await _userManager.GetRolesAsync(accountTarget.AccountIdentity)).Single();
+            
+            // God has all privileges
+            if (accountWhoRequestedRole == AccountType.God.ToString())
+            {
+                return;
+            }
+
+            // Request has no admin Privileges
+            if (accountWhoRequestedRole != AccountType.GameMaster.ToString())
+            {
+                throw new NoAuthorizationException();
+            }
+
+            // Deny request to higher roles if not God
+            if (accountTargetRole == AccountType.God.ToString() ||
+                accountTargetRole == AccountType.GameMaster.ToString())
+            {
+                throw new NoAuthorizationException();
+            }
         }
     }
 }

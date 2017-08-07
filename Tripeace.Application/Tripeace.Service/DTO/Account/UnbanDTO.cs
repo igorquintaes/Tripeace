@@ -8,5 +8,6 @@ namespace Tripeace.Service.DTO.Account
     {
         public int Id { get; set; }
         public string Reason { get; set; }
+        public string AccountWhoRequested { get; set; }
     }
 }

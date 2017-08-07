@@ -78,5 +78,10 @@ namespace Tripeace.Application.MVC
         {
             _logger.LogInformation(text);
         }
+
+        protected void LogUnauthorizedAccess(string userName, string place)
+        {
+            _logger.LogInformation("UNAUTHORIZED ACCESS BLOCKED. Requested by: " + userName + ". Request: " + place);
+        }
     }
 }

@@ -19,10 +19,11 @@ namespace Tripeace.Service.Services.Server.Contracts
         Task<IndexDTO> GetPlayerInfoIndex(string accountName);
         Task<AccountListDTO> GetAccountList(int? pageNumber, string searchKey);
         Task<int> GetCharactersQuantity(string accountName);
-        Task LockAccount(int id);
-        Task UnlockAccount(int id);
-        Task DeleteAccount(int id);
-        Task<AccountToAdminEditDTO> GetAccountToAdminEdit(int id);
+        Task LockAccount(int id, string accountWhoRequested);
+        Task UnlockAccount(int id, string accountWhoRequested);
+        Task DeleteAccount(int id, string accountWhoRequested);
+        Task<AccountToAdminEditDTO> GetAccountToAdminEdit(int id, string accountWhoRequested);
         Task SetAccountToAdminEdit(AccountToAdminEditDTO dto);
+        Task AssureAdminAuthorization(Account accountTarget, Account accountWhoRequested);
     }
 }

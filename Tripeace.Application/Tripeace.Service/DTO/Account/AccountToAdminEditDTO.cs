@@ -10,5 +10,7 @@ namespace Tripeace.Service.DTO.Account
         public string Name { get; set; }
         public string Email { get; set; }
         public bool ReciveNews { get; set; }
+
+        public string AccountWhoRequested { get; set; }
     }
 }

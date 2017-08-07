@@ -21,6 +21,7 @@ namespace Tripeace.Service.Services.Server
         private readonly IAccountRepository _accountRepository;
         private readonly IBanRepository _banRepository;
         private readonly IBanHistoryRepository _banHistoryRepository;
+        private readonly IAccountService _accountService;
         private readonly UserManager<AccountIdentity> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
@@ -28,12 +29,14 @@ namespace Tripeace.Service.Services.Server
             IAccountRepository accountRepository,
             IBanRepository banRepository,
             IBanHistoryRepository banHistoryRepository,
+            IAccountService accountService,
             UserManager<AccountIdentity> userManager,
             RoleManager<IdentityRole> roleManager)
         {
             _accountRepository = accountRepository;
             _banRepository = banRepository;
             _banHistoryRepository = banHistoryRepository;
+            _accountService = accountService;
             _userManager = userManager;
             _roleManager = roleManager;
         }
@@ -58,14 +61,8 @@ namespace Tripeace.Service.Services.Server
                 // Invalid admin account request
                 throw new InvalidAdminAccountException();
             }
-
-            var bannedByRole = (await _userManager.GetRolesAsync(bannedBy.AccountIdentity)).Single();
-            if (bannedByRole != AccountType.GameMaster.ToString() &&
-                bannedByRole != AccountType.God.ToString())
-            {
-                // not requested by an admin or god
-                throw new InvalidAdminAccountException();
-            }
+            
+            await _accountService.AssureAdminAuthorization(account, bannedBy);
 
             // Set a character to set a ban
             // Character as God, character as admin
@@ -111,6 +108,14 @@ namespace Tripeace.Service.Services.Server
                 // Invalid Id request
                 throw new InvalidIdException();
             }
+
+            var whoRequested = await _accountRepository.GetByName(dto.AccountWhoRequested);
+            if (whoRequested == null)
+            {
+                throw new InvalidIdException();
+            }
+
+            await _accountService.AssureAdminAuthorization(account, whoRequested);
 
             if (account.AccountBan == null)
             {

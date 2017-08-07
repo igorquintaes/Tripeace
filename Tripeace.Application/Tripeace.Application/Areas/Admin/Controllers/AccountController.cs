@@ -65,7 +65,7 @@ namespace Tripeace.Application.Areas.Admin.Controllers
         {
             try
             {
-                var dto = await _accountService.GetAccountToAdminEdit(id);
+                var dto = await _accountService.GetAccountToAdminEdit(id, User.Identity.Name);
                 var model = Mapper<AccountToAdminEditDTO, EditModel>(dto);
 
                 return View(model);
@@ -73,6 +73,12 @@ namespace Tripeace.Application.Areas.Admin.Controllers
             catch (InvalidIdException)
             {
                 // id of an account that does not exist
+                return RedirectToAction("List");
+            }
+            catch (NoAuthorizationException)
+            {
+                // Game Master trying to cheat
+                LogUnauthorizedAccess(User.Identity.Name, "Admin/Account/Edit:Get");
                 return RedirectToAction("List");
             }
             catch (Exception ex)
@@ -90,6 +96,7 @@ namespace Tripeace.Application.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var dto = Mapper<EditModel, AccountToAdminEditDTO>(model);
+                dto.AccountWhoRequested = User.Identity.Name;
 
                 try
                 {
@@ -98,6 +105,12 @@ namespace Tripeace.Application.Areas.Admin.Controllers
                 }
                 catch (InvalidIdException)
                 {
+                    return RedirectToAction("List");
+                }
+                catch (NoAuthorizationException)
+                {
+                    // Game Master trying to cheat
+                    LogUnauthorizedAccess(User.Identity.Name, "Admin/Account/Edit:Post");
                     return RedirectToAction("List");
                 }
                 catch (EmailInUseException)
@@ -127,11 +140,17 @@ namespace Tripeace.Application.Areas.Admin.Controllers
         {
             try
             {
-                await _accountService.LockAccount(id);
+                await _accountService.LockAccount(id, User.Identity.Name);
             }
             catch (InvalidIdException)
             {
                 // id of an account that does not exist (dows not need to log, just an Admin can try to cheat lol)
+                return RedirectToAction("List");
+            }
+            catch (NoAuthorizationException)
+            {
+                // Game Master trying to cheat
+                LogUnauthorizedAccess(User.Identity.Name, "Admin/Account/Lock:Get");
                 return RedirectToAction("List");
             }
             catch (Exception ex)
@@ -152,11 +171,17 @@ namespace Tripeace.Application.Areas.Admin.Controllers
         {
             try
             {
-                await _accountService.UnlockAccount(id);
+                await _accountService.UnlockAccount(id, User.Identity.Name);
             }
             catch (InvalidIdException)
             {
                 // id of an account that does not exist (dows not need to log, just an Admin can try to cheat lol)
+                return RedirectToAction("List");
+            }
+            catch (NoAuthorizationException)
+            {
+                // Game Master trying to cheat
+                LogUnauthorizedAccess(User.Identity.Name, "Admin/Account/Unlock:Get");
                 return RedirectToAction("List");
             }
             catch (Exception ex)
@@ -192,6 +217,12 @@ namespace Tripeace.Application.Areas.Admin.Controllers
                 ajaxReturn.Message = _localizer["InvalidAttempt"];
 
                 return Json(ajaxReturn);
+            }
+            catch (NoAuthorizationException)
+            {
+                // Game Master trying to cheat
+                LogUnauthorizedAccess(User.Identity.Name, "Admin/Account/Ban:Post");
+                return RedirectToAction("List");
             }
             catch (InvalidAdminAccountException)
             {
@@ -244,6 +275,8 @@ namespace Tripeace.Application.Areas.Admin.Controllers
             try
             {
                 var dto = Mapper<UnbanModel, UnbanDTO>(model);
+                dto.AccountWhoRequested = User.Identity.Name;
+
                 await _banService.UnbanAccount(dto);
             }
             catch (InvalidIdException)
@@ -253,6 +286,12 @@ namespace Tripeace.Application.Areas.Admin.Controllers
                 ajaxReturn.Message = _localizer["InvalidAttempt"];
 
                 return Json(ajaxReturn);
+            }
+            catch (NoAuthorizationException)
+            {
+                // Game Master trying to cheat
+                LogUnauthorizedAccess(User.Identity.Name, "Admin/Account/Unban:Post");
+                return RedirectToAction("List");
             }
             catch (NoAccountBanException)
             {
@@ -286,7 +325,7 @@ namespace Tripeace.Application.Areas.Admin.Controllers
             var ajaxReturn = new AjaxFeedbackModel();
             try
             {
-                await _accountService.DeleteAccount(id);
+                await _accountService.DeleteAccount(id, User.Identity.Name);
             }
             catch (InvalidIdException)
             {
@@ -295,6 +334,12 @@ namespace Tripeace.Application.Areas.Admin.Controllers
                 ajaxReturn.Message = _localizer["InvalidAttempt"];
 
                 return Json(ajaxReturn);
+            }
+            catch (NoAuthorizationException)
+            {
+                // Game Master trying to cheat
+                LogUnauthorizedAccess(User.Identity.Name, "Admin/Account/Delete:Post");
+                return RedirectToAction("List");
             }
             catch (Exception ex)
             {
