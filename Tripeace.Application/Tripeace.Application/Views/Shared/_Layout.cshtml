@@ -19,13 +19,9 @@
         <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.min.css" />
     </environment>
     @Html.Raw(JavaScriptSnippet.FullScript)
-    @{
-        var controller = this.ViewContext.RouteData.Values["controller"] as string;
-        var action = this.ViewContext.RouteData.Values["action"] as string;
-    }
 </head>
 
-<body class="@controller @action">
+<body>
     <header id="header">
         <div class="top-bar">
             <div class="container">

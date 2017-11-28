@@ -9,13 +9,13 @@ using Tripeace.EF.Repository.Server;
 using Tripeace.Service.Services.Server;
 using Tripeace.EF;
 using Tripeace.Domain.Entities;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Tripeace.Domain.Consts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 using Microsoft.AspNetCore.Builder;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
 
 namespace Tripeace.IoC
 {
@@ -27,6 +27,9 @@ namespace Tripeace.IoC
             {
                 options.UseMySql(configBuilder.GetConnectionString("DefaultConnection"));
             });
+
+            // Database seeder
+            services.AddScoped<IDatabaseManager, DatabaseManager>();
         }
 
         public static void InjectIdentity(IServiceCollection services)
@@ -95,7 +98,7 @@ namespace Tripeace.IoC
             services.Add(new ServiceDescriptor(typeof(IConfiguration),
                      provider => configBuilder,
                      ServiceLifetime.Singleton));
-
+            
             // All Repositories
             var repositoryAssembly = typeof(AccountRepository).GetTypeInfo().Assembly;
             var repositoryRegistrations =
@@ -127,7 +130,7 @@ namespace Tripeace.IoC
 
             foreach (var reg in serviceRegistrations)
             {
-                services.AddSingleton(reg.Contract, reg.Implementation);
+                services.AddScoped(reg.Contract, reg.Implementation);
             }
         }
     }

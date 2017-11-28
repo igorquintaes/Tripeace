@@ -24,6 +24,5 @@ namespace Tripeace.Service.Services.Server.Contracts
         Task DeleteAccount(int id, string accountWhoRequested);
         Task<AccountToAdminEditDTO> GetAccountToAdminEdit(int id, string accountWhoRequested);
         Task SetAccountToAdminEdit(AccountToAdminEditDTO dto);
-        Task AssureAdminAuthorization(Account accountTarget, Account accountWhoRequested);
     }
 }
