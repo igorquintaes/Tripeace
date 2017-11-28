@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -10,7 +9,6 @@ using Tripeace.Service.DTO.Character;
 using Tripeace.Service.Exceptions;
 using Tripeace.Service.Services.Server.Contracts;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -61,7 +59,7 @@ namespace Tripeace.Application.Controllers
             }
             catch (Exception ex)
             {
-                LogError(ex, "Error on /Account/LogIn");
+                LogError(ex, nameof(AccountController), nameof(AccountController.Index));
                 ViewData["Error"] = _localizer["UnknownErrorContactAnAdmin"];
             }
 
@@ -74,8 +72,8 @@ namespace Tripeace.Application.Controllers
         [AllowAnonymous]
         public IActionResult LogIn(string returnUrl = null)
         {
-            if (!String.IsNullOrEmpty(User?.Identity?.Name))
-                return RedirectToAction("Index");
+            if (!string.IsNullOrEmpty(User?.Identity?.Name))
+                return RedirectToAction(nameof(Index));
 
             ViewData["ReturnUrl"] = returnUrl;
             return View();
@@ -88,7 +86,7 @@ namespace Tripeace.Application.Controllers
         public async Task<IActionResult> LogIn(LoginViewModel model, string returnUrl = null)
         {
             if (!String.IsNullOrEmpty(User?.Identity?.Name))
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
 
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
@@ -100,7 +98,7 @@ namespace Tripeace.Application.Controllers
                     var errors = await _accountService.TryLogin(dto);
                     if (errors == null || !errors.Any())
                     {
-                        LogInformation("User Logged In. Account: " + dto.Account);
+                        LogInformation($"User Logged In. Account: {dto.Account}");
                         return RedirectToReturnUrl(returnUrl);
                     }
 
@@ -121,7 +119,7 @@ namespace Tripeace.Application.Controllers
                 }
                 catch (Exception ex)
                 {
-                    LogError(ex, "Error on /Account/LogIn");
+                    LogError(ex, nameof(AccountController), nameof(LogIn));
                     AddModelErrors(_localizer["UnknownErrorContactAnAdmin"]);
                 }
             }
@@ -135,16 +133,15 @@ namespace Tripeace.Application.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LogOff()
         {
-            var account = User.Identity.Name;
-
             try
             {
+                var account = User?.Identity?.Name ?? "not loggedin user request";
                 await _accountService.LogOff();
-                LogInformation("User Logged Out. Account: " + account);
+                LogInformation($"User Logged Out. Account: {account}");
             }
             catch (Exception ex)
             {
-                LogError(ex, "Error on /Account/LogOff");
+                LogError(ex, nameof(AccountController), nameof(LogOff));
             }
 
             return RedirectToAction(nameof(HomeController.Index));
@@ -156,8 +153,8 @@ namespace Tripeace.Application.Controllers
         [AllowAnonymous]
         public IActionResult Register()
         {
-            if (!String.IsNullOrEmpty(User?.Identity?.Name))
-                return RedirectToAction("Index");
+            if (!string.IsNullOrEmpty(User?.Identity?.Name))
+                return RedirectToAction(nameof(Index));
 
             return View();
         }
@@ -169,7 +166,7 @@ namespace Tripeace.Application.Controllers
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (!String.IsNullOrEmpty(User?.Identity?.Name))
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
 
             if (ModelState.IsValid)
             {
@@ -180,8 +177,8 @@ namespace Tripeace.Application.Controllers
                     var errors = await _accountService.TryRegisterAccount(dto);
                     if (errors == null || !errors.Any())
                     {
-                        LogInformation("New User Registered! Account: " + dto.AccountName);
-                        return RedirectToAction("Index", new { newAccount = true });
+                        LogInformation($"New User Registered! Account: {dto.AccountName}");
+                        return RedirectToAction(nameof(Index), new { newAccount = true });
                     }
 
                     AddModelErrors(errors);
@@ -196,7 +193,7 @@ namespace Tripeace.Application.Controllers
                 }
                 catch (Exception ex)
                 {
-                    LogError(ex, "Error on /Account/Register");
+                    LogError(ex, nameof(AccountController), nameof(Register));
                     AddModelErrors(_localizer["UnknownErrorContactAnAdmin"]);
                 }
             }
@@ -210,11 +207,9 @@ namespace Tripeace.Application.Controllers
         public async Task<IActionResult> CreateCharacter()
         {
             var charactersQuantityInAccount = await _accountService.GetCharactersQuantity(User.Identity.Name);
-
             if (charactersQuantityInAccount >= 20)
             {
-                // Only enter here if player forces a post by http injection or already opened tab
-                return RedirectToAction("Index", "Account");
+                return RedirectToAction(nameof(Index), nameof(AccountController));
             }
 
             var model = new CreateCharacterViewModel()
@@ -231,10 +226,9 @@ namespace Tripeace.Application.Controllers
         public async Task<IActionResult> CreateCharacter(CreateCharacterViewModel model)
         {
             var charactersQuantityInAccount = await _accountService.GetCharactersQuantity(User.Identity.Name);
-
             if (charactersQuantityInAccount >= 20)
             {
-                return RedirectToAction("Index", "Account");
+                return RedirectToAction(nameof(Index), nameof(AccountController));
             }
 
             if (ModelState.IsValid)
@@ -244,9 +238,11 @@ namespace Tripeace.Application.Controllers
                 try
                 {
                     await _characterService.CreateNewCharacter(dto, User.Identity.Name);
-                    LogInformation("New Character Created. Account: " + User.Identity.Name + ", Character: " + dto.Name);
+                    LogInformation($"New Character Created. " +
+                                   $"Account: {User.Identity.Name}, " +
+                                   $"Character: {dto.Name}");
 
-                    return RedirectToAction("Index", "Account");
+                    return RedirectToAction(nameof(Index), nameof(AccountController));
                 }
                 catch (CharacterAlreadyRegisteredException)
                 {
@@ -254,7 +250,7 @@ namespace Tripeace.Application.Controllers
                 }
                 catch (Exception ex)
                 {
-                    LogError(ex, "Error on /Account/CreateCharacter");
+                    LogError(ex, nameof(AccountController), nameof(CreateCharacter));
                     AddModelErrors(_localizer["UnknownErrorContactAnAdmin"]);
                 }
             }
@@ -279,18 +275,18 @@ namespace Tripeace.Application.Controllers
             catch (TryingToAccessOtherAccountException)
             {
                 // If someone try to access a character of other account
-                LogInformation(" Trying to access other persons character edit page. Account: " + User.Identity.Name);
-                return RedirectToAction("Index");
+                LogInformation($" Trying to access other persons character edit page. Account: {User.Identity.Name}");
+                return RedirectToAction(nameof(Index));
             }
             catch (InvalidIdException)
             {
                 // id of a character that does not exist
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                LogError(ex, "Error on /Account/EditCharacter");
-                return RedirectToAction("Index");
+                LogError(ex, nameof(AccountController), nameof(EditCharacter));
+                return RedirectToAction(nameof(Index));
             }
         }
 
@@ -311,17 +307,17 @@ namespace Tripeace.Application.Controllers
                 catch (TryingToAccessOtherAccountException)
                 {
                     // If someone try to access a character of other account
-                    LogInformation(" Trying to access other persons character edit page. Account: " + User.Identity.Name);
-                    return RedirectToAction("Index");
+                    LogInformation($" Trying to access other persons character edit page. Account: {User.Identity.Name}");
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (InvalidIdException)
                 {
                     // id of a character that does not exist
-                    return RedirectToAction("Index");
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
                 {
-                    LogError(ex, "Error on /Account/EditCharacter");
+                    LogError(ex, nameof(AccountController), nameof(EditCharacter));
                     AddModelErrors(_localizer["UnknownErrorContactAnAdmin"]);
                 }
             }

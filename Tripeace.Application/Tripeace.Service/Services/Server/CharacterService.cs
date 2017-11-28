@@ -2,14 +2,12 @@
 using Tripeace.Domain.Contracts.Repositories;
 using Tripeace.Domain.Entities;
 using Tripeace.Domain.Enums;
-using Tripeace.Service.DTO.Account;
 using Tripeace.Service.DTO.Character;
 using Tripeace.Service.Exceptions;
 using Tripeace.Service.Services.Server.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Tripeace.Service.Services.Server
@@ -33,7 +31,6 @@ namespace Tripeace.Service.Services.Server
         public async Task CreateNewCharacter(CreateCharacterDTO data, string accountName)
         {
             var account = await _accountRepository.GetByName(accountName);
-
             if (await _playerRepository.GetByName(data.Name) != null)
             {
                 throw new CharacterAlreadyRegisteredException();
@@ -106,10 +103,10 @@ namespace Tripeace.Service.Services.Server
 
             character.Description = data.Description;
             character.IsVisible = data.IsVisible;
-
             await _playerRepository.Update(character);
         }
 
+        // Todo: change after settings page on admin
         public IEnumerable<Vocation> GetVocationsOnCreate()
         {
             var vocationsOnCreate = _configuration.AsEnumerable()

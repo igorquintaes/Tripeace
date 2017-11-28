@@ -12,6 +12,6 @@ namespace Tripeace.Service.Services.Server.Contracts
     {
         Task BanAccount(BanDTO dto);
         Task UnbanAccount(UnbanDTO dto);
-        Task<bool> IsBanned(int id);
+        Task<bool> IsBanned(Account account);
     }
 }

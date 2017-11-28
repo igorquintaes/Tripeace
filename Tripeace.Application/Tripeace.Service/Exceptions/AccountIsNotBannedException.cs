@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Tripeace.Service.Exceptions
 {
-    public class NoAccountBanException : Exception
+    public class AccountIsNotBannedException : Exception
     {
     }
 }

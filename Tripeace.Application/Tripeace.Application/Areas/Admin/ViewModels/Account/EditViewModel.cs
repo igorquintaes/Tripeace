@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 using Tripeace.Domain.Consts;
 
 namespace Tripeace.Application.Areas.Admin.ViewModels.Account
 {
-    public class EditModel
+    public class EditViewModel
     {
         public int Id { get; set; }
 

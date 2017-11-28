@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Tripeace.Domain.Enums
 {
+    [Flags]
     public enum AccountType
     {
-        Player = 1,
-        Tutor = 2,
-        SeniorTutor = 3,
-        GameMaster = 4,
-        God = 5
+        Player      = 0,
+        Tutor       = 1 << 0,
+        SeniorTutor = 1 << 1,
+        GameMaster  = 1 << 2,
+        God         = 1 << 3 
     }
 }

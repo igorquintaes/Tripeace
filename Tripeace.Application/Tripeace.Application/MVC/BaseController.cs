@@ -42,6 +42,9 @@ namespace Tripeace.Application.MVC
         protected void AddModelErrors(string error) => 
             ModelState.AddModelError(string.Empty, error);
 
+        protected void LogError(Exception ex, string controllerName, string actionName) =>
+            LogError(ex, $"Error on /{controllerName}/{actionName}");
+
         protected void LogError(Exception ex, string message)
         {
             _logger.LogError($"Message: {message}");
