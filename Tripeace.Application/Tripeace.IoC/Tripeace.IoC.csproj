@@ -1,18 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="cloudscribe.Web.Pagination" Version="1.1.4" />
-    <PackageReference Include="microsoft.aspnetcore.diagnostics" Version="1.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.3" />
-    <PackageReference Include="microsoft.aspnetcore.staticfiles" Version="1.1.2" />
-    <PackageReference Include="microsoft.extensions.logging.debug" Version="1.1.2" />
-    <PackageReference Include="microsoft.visualstudio.web.browserlink" Version="1.1.2" />
+    <PackageReference Include="cloudscribe.Web.Pagination" Version="2.1.1" />
+    <PackageReference Include="microsoft.aspnetcore.diagnostics" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.1" />
+    <PackageReference Include="microsoft.aspnetcore.staticfiles" Version="2.0.1" />
+    <PackageReference Include="microsoft.extensions.logging.debug" Version="2.0.0" />
+    <PackageReference Include="microsoft.visualstudio.web.browserlink" Version="2.0.1" />
     <PackageReference Include="nlog.web.aspnetcore" Version="4.4.1" />
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="1.1.2" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.0.1" />
   </ItemGroup>
 
   <ItemGroup>

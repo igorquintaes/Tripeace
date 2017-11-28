@@ -21,6 +21,7 @@ namespace Tripeace.Service.Services.Server
     {
         private readonly IAccountRepository _accountRepository;
         private readonly IBanService _banService;
+        private readonly IAuthorizationService _authorizationService;
         private readonly UserManager<AccountIdentity> _userManager;
         private readonly SignInManager<AccountIdentity> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
@@ -28,6 +29,7 @@ namespace Tripeace.Service.Services.Server
         public AccountService(
             IAccountRepository accountRepository,
             IBanService banService,
+            IAuthorizationService authorizationService,
             UserManager<AccountIdentity> userManager,
             SignInManager<AccountIdentity> signInManager,
             RoleManager<IdentityRole> roleManager)
@@ -216,7 +218,7 @@ namespace Tripeace.Service.Services.Server
                 throw new InvalidIdException();
             }
 
-            await AssureAdminAuthorization(accountToEdit, whoRequested);
+            await _authorizationService.AssureAdminAuthorization(accountToEdit, whoRequested);
 
             return new AccountToAdminEditDTO()
             {
@@ -241,7 +243,7 @@ namespace Tripeace.Service.Services.Server
                 throw new InvalidIdException();
             }
 
-            await AssureAdminAuthorization(accountToEdit, whoRequested);
+            await _authorizationService.AssureAdminAuthorization(accountToEdit, whoRequested);
 
             var checkAccount = await _accountRepository.GetByName(dto.Name);
             if (checkAccount != null && 
@@ -284,7 +286,7 @@ namespace Tripeace.Service.Services.Server
                 throw new InvalidIdException();
             }
 
-            await AssureAdminAuthorization(accountToLock, whoRequested);
+            await _authorizationService.AssureAdminAuthorization(accountToLock, whoRequested);
 
             try
             {
@@ -292,14 +294,14 @@ namespace Tripeace.Service.Services.Server
 
                 while (!(await _userManager.IsLockedOutAsync(accountToLock.AccountIdentity)))
                 {
-                    await _signInManager.PasswordSignInAsync(accountToLock.Name, "locktheuser010203" + DateTime.Now.ToString("ddMMyyysszzf"), false, true);
+                    await _signInManager.PasswordSignInAsync(accountToLock.Name, new Guid().ToString("N"), false, true);
                 }
             }
             catch (LockedAccountException)
             {
             }
 
-            accountToLock.AccountIdentity.LockoutEnd = DateTime.Now.AddYears(10);
+            accountToLock.AccountIdentity.LockoutEnd = DateTime.Now.AddYears(50);
             await _userManager.UpdateAsync(accountToLock.AccountIdentity);
 
             return;
@@ -319,7 +321,7 @@ namespace Tripeace.Service.Services.Server
                 throw new InvalidIdException();
             }
 
-            await AssureAdminAuthorization(accountToUnlock, whoRequested);
+            await _authorizationService.AssureAdminAuthorization(accountToUnlock, whoRequested);
 
             accountToUnlock.AccountIdentity.LockoutEnd = null;
             await _userManager.UpdateAsync(accountToUnlock.AccountIdentity);
@@ -339,34 +341,9 @@ namespace Tripeace.Service.Services.Server
                 throw new InvalidIdException();
             }
 
-            await AssureAdminAuthorization(accountToDelete, whoRequested);
+            await _authorizationService.AssureAdminAuthorization(accountToDelete, whoRequested);
 
             await _accountRepository.Delete(accountToDelete);
-        }
-
-        public async Task AssureAdminAuthorization(Account accountTarget, Account accountWhoRequested)
-        {
-            var accountWhoRequestedRole = (await _userManager.GetRolesAsync(accountWhoRequested.AccountIdentity)).Single();
-            var accountTargetRole = (await _userManager.GetRolesAsync(accountTarget.AccountIdentity)).Single();
-            
-            // God has all privileges
-            if (accountWhoRequestedRole == AccountType.God.ToString())
-            {
-                return;
-            }
-
-            // Request has no admin Privileges
-            if (accountWhoRequestedRole != AccountType.GameMaster.ToString())
-            {
-                throw new NoAuthorizationException();
-            }
-
-            // Deny request to higher roles if not God
-            if (accountTargetRole == AccountType.God.ToString() ||
-                accountTargetRole == AccountType.GameMaster.ToString())
-            {
-                throw new NoAuthorizationException();
-            }
         }
     }
 }

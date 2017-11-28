@@ -75,7 +75,7 @@ namespace Tripeace.IoC
 
         public static void ConfigureEtc(IApplicationBuilder app)
         {
-            app.UseIdentity();
+            app.UseAuthentication();
             app.UseStaticFiles();
             app.UseMvcWithDefaultRoute();
         }

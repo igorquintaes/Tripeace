@@ -1,13 +1,26 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Tripeace.Domain.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using System;
+using Microsoft.AspNetCore.Identity;
 
 namespace Tripeace.EF
 {
     public partial class ServerContext : IdentityDbContext<AccountIdentity, IdentityRole, string>
     {
+
+        protected ServerContext()
+        {
+        }
+
+        public ServerContext(DbContextOptions<ServerContext> options)
+            : base(options)
+        {
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
+            base.OnConfiguring(optionsBuilder);
+
         public virtual DbSet<AccountBanHistory> AccountBanHistory { get; set; }
         public virtual DbSet<AccountBan> AccountBans { get; set; }
         public virtual DbSet<AccountIdentity> AccountIdentity { get; set; }
@@ -35,23 +48,6 @@ namespace Tripeace.EF
         public virtual DbSet<PlayersOnline> PlayersOnline { get; set; }
         public virtual DbSet<ServerConfig> ServerConfig { get; set; }
         public virtual DbSet<TileStore> TileStore { get; set; }
-
-        public ServerContext(DbContextOptions<ServerContext> options)
-            : base(options)
-        {
-        }
-
-        public ServerContext()
-        {
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            base.OnConfiguring(optionsBuilder);
-
-            // uncomment the bellow line to run migrations. Also update the connection string if need.
-            optionsBuilder.UseMySql("Server=localhost;DataBase=TibiaOtNew;Uid=root;Pwd=root");
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

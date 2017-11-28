@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Tripeace.Domain.Contracts;
 using Tripeace.IoC;
 
 namespace Tripeace.Application
@@ -34,7 +35,7 @@ namespace Tripeace.Application
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IDatabaseManager databaseManager)
         {
             ConfigureManager.ConfigureNLog(app, env, loggerFactory, _configuration);
             ConfigureManager.ConfigureLocalization(app);
@@ -53,7 +54,7 @@ namespace Tripeace.Application
             ConfigureManager.ConfigureRoutes(app);
 
             // Database configuration
-            DatabaseManager.SeedRoles(app).Wait();
+            databaseManager.SeedRoles().Wait();
         }
     }
 }

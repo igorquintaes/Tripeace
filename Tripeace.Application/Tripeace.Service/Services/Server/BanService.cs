@@ -1,11 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Tripeace.Domain.Contracts.Repositories;
 using Tripeace.Domain.Entities;
@@ -21,7 +16,7 @@ namespace Tripeace.Service.Services.Server
         private readonly IAccountRepository _accountRepository;
         private readonly IBanRepository _banRepository;
         private readonly IBanHistoryRepository _banHistoryRepository;
-        private readonly IAccountService _accountService;
+        private readonly IAuthorizationService _authorizationService;
         private readonly UserManager<AccountIdentity> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
@@ -29,14 +24,14 @@ namespace Tripeace.Service.Services.Server
             IAccountRepository accountRepository,
             IBanRepository banRepository,
             IBanHistoryRepository banHistoryRepository,
-            IAccountService accountService,
+            IAuthorizationService authorizationService,
             UserManager<AccountIdentity> userManager,
             RoleManager<IdentityRole> roleManager)
         {
             _accountRepository = accountRepository;
             _banRepository = banRepository;
             _banHistoryRepository = banHistoryRepository;
-            _accountService = accountService;
+            _authorizationService = authorizationService;
             _userManager = userManager;
             _roleManager = roleManager;
         }
@@ -62,7 +57,7 @@ namespace Tripeace.Service.Services.Server
                 throw new InvalidAdminAccountException();
             }
             
-            await _accountService.AssureAdminAuthorization(account, bannedBy);
+            await _authorizationService.AssureAdminAuthorization(account, bannedBy);
 
             // Set a character to set a ban
             // Character as God, character as admin
@@ -115,7 +110,7 @@ namespace Tripeace.Service.Services.Server
                 throw new InvalidIdException();
             }
 
-            await _accountService.AssureAdminAuthorization(account, whoRequested);
+            await _authorizationService.AssureAdminAuthorization(account, whoRequested);
 
             if (account.AccountBan == null)
             {

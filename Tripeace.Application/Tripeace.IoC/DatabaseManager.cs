@@ -1,17 +1,21 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Microsoft.AspNetCore.Identity;
+using System.Linq;
 using System.Threading.Tasks;
+using Tripeace.Domain.Contracts;
 using Tripeace.Domain.Enums;
+using Tripeace.EF;
 
 namespace Tripeace.IoC
 {
-    public static class DatabaseManager
+    public class DatabaseManager : IDatabaseManager
     {
+        private readonly ServerContext _context;
+
+        public DatabaseManager(ServerContext context)
+        {
+            _context = context;
+        }
+
         private static readonly string[] Roles = new string[]
         {
             AccountType.Player.ToString(),
@@ -21,22 +25,17 @@ namespace Tripeace.IoC
             AccountType.God.ToString(),
         };
 
-        public static async Task SeedRoles(IApplicationBuilder app)
+        public async Task SeedRoles()
         {
-            var serviceProvider = app.ApplicationServices;
-
-            using (var serviceScope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            foreach (var role in Roles)
             {
-                var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-                foreach (var role in Roles)
+                if (!_context.Roles.Any(x => x.Name == role))
                 {
-                    if (!await roleManager.RoleExistsAsync(role))
-                    {
-                        await roleManager.CreateAsync(new IdentityRole(role));
-                    }
+                    await _context.Roles.AddAsync(new IdentityRole(role));
                 }
             }
+
+            await _context.SaveChangesAsync();
         }
     }
 }
