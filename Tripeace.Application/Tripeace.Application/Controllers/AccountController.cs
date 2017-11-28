@@ -41,12 +41,12 @@ namespace Tripeace.Application.Controllers
             try
             {
                 var dto = await _accountService.GetPlayerInfoIndex(User.Identity.Name);
-                var data = new Index()
+                var data = new IndexViewModel()
                 {
                     AccountName = dto.AccountName,
                     Email = dto.Email,
                     IsNewAccount = newAccount,
-                    Characters = dto.Characters.Select(x => new IndexPlayer()
+                    Characters = dto.Characters.Select(x => new IndexPlayerViewModel()
                     {
                         Id = x.Id,
                         Description = x.Description,
@@ -85,7 +85,7 @@ namespace Tripeace.Application.Controllers
         // POST: /Account/LogIn
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> LogIn(Login model, string returnUrl = null)
+        public async Task<IActionResult> LogIn(LoginViewModel model, string returnUrl = null)
         {
             if (!String.IsNullOrEmpty(User?.Identity?.Name))
                 return RedirectToAction("Index");
@@ -93,7 +93,7 @@ namespace Tripeace.Application.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var dto = Mapper<Login, LoginDTO>(model);
+                var dto = Mapper<LoginViewModel, LoginDTO>(model);
 
                 try
                 {
@@ -166,14 +166,14 @@ namespace Tripeace.Application.Controllers
         // POST: /Account/Register
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Register(Register model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (!String.IsNullOrEmpty(User?.Identity?.Name))
                 return RedirectToAction("Index");
 
             if (ModelState.IsValid)
             {
-                var dto = Mapper<Register, RegisterDTO>(model);
+                var dto = Mapper<RegisterViewModel, RegisterDTO>(model);
 
                 try
                 {
@@ -217,7 +217,7 @@ namespace Tripeace.Application.Controllers
                 return RedirectToAction("Index", "Account");
             }
 
-            var model = new CreateCharacter()
+            var model = new CreateCharacterViewModel()
             {
                 AllowedVocations = _characterService.GetVocationsOnCreate()
             };
@@ -228,7 +228,7 @@ namespace Tripeace.Application.Controllers
         //
         // POST: /Account/CreateCharacter
         [HttpPost]
-        public async Task<IActionResult> CreateCharacter(CreateCharacter model)
+        public async Task<IActionResult> CreateCharacter(CreateCharacterViewModel model)
         {
             var charactersQuantityInAccount = await _accountService.GetCharactersQuantity(User.Identity.Name);
 
@@ -239,7 +239,7 @@ namespace Tripeace.Application.Controllers
 
             if (ModelState.IsValid)
             {
-                var dto = Mapper<CreateCharacter, CreateCharacterDTO>(model);
+                var dto = Mapper<CreateCharacterViewModel, CreateCharacterDTO>(model);
 
                 try
                 {
@@ -272,7 +272,7 @@ namespace Tripeace.Application.Controllers
             try
             {
                 var dto = await _characterService.GetCharacterEdit(id, User.Identity.Name);
-                var model = Mapper<EditCharacterDTO, EditCharacter>(dto);
+                var model = Mapper<EditCharacterDTO, EditCharacterViewModel>(dto);
 
                 return View(model);
             }
@@ -297,13 +297,13 @@ namespace Tripeace.Application.Controllers
         //
         // POST: /Account/EditCharacter
         [HttpPost]
-        public async Task<IActionResult> EditCharacter(EditCharacter model)
+        public async Task<IActionResult> EditCharacter(EditCharacterViewModel model)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var dto = Mapper<EditCharacter, EditCharacterDTO>(model);
+                    var dto = Mapper<EditCharacterViewModel, EditCharacterDTO>(model);
                     await _characterService.UpdateCharacter(dto, User.Identity.Name);
 
                     return View(model);

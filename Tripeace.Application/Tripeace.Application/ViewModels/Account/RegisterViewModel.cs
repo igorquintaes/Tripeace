@@ -1,13 +1,9 @@
 ﻿using Tripeace.Domain.Consts;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Tripeace.Application.ViewModels.Account
 {
-    public class Register
+    public class RegisterViewModel
     {
         [Required(ErrorMessage = "AccountNameIsRequired")]
         [RegularExpression(@"^[a-zA-Z\d]+$", ErrorMessage = "ContainsUnkowCharacters")]

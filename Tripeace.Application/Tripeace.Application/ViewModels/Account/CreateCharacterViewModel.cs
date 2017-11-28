@@ -1,15 +1,12 @@
 ﻿using Tripeace.Application.MVC.DataAnnotations;
 using Tripeace.Domain.Consts;
 using Tripeace.Domain.Enums;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Tripeace.Application.ViewModels.Account
 {
-    public class CreateCharacter
+    public class CreateCharacterViewModel
     {
         [Required(ErrorMessage = "NameIsRequired")]
         [Display(Name = "Name")]

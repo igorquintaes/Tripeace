@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Tripeace.Application.ViewModels.Account
 {
-    public class Login
+    public class LoginViewModel
     {
         [Required(ErrorMessage = "AccountIsRequired")]
         [Display(Name = "Account")]
