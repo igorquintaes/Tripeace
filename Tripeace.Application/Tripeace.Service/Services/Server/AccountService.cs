@@ -11,7 +11,6 @@ using System.Security.Cryptography;
 using System.Linq;
 using System.Threading.Tasks;
 using Tripeace.Domain.Enums;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Tripeace.Domain.Consts;
 using Microsoft.EntityFrameworkCore;
 
@@ -43,7 +42,12 @@ namespace Tripeace.Service.Services.Server
 
         public async Task<IEnumerable<string>> TryLogin(LoginDTO data)
         {
-            var result = await _signInManager.PasswordSignInAsync(data.Account, data.Password, data.RememberMe, lockoutOnFailure: true);
+            var result = await _signInManager.PasswordSignInAsync(
+                data.Account, 
+                data.Password, 
+                data.RememberMe, 
+                lockoutOnFailure: true);
+
             if (result.Succeeded)
             {
                 return null;
@@ -60,10 +64,8 @@ namespace Tripeace.Service.Services.Server
             throw new InvalidLogInAttemptException();
         }
 
-        public async Task LogOff()
-        {
+        public async Task LogOff() => 
             await _signInManager.SignOutAsync();
-        }
 
         public async Task<IEnumerable<string>> TryRegisterAccount(RegisterDTO data)
         {
@@ -139,10 +141,12 @@ namespace Tripeace.Service.Services.Server
         }
 
         // TODO move to a security service
-        private static string GetHash(string input)
-        {
-            return string.Join("", (SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes(input))).Select(x => x.ToString("X2")).ToArray());
-        }
+        private static string GetHash(string input) => 
+            string.Join(
+                separator: string.Empty, 
+                values: (SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes(input)))
+                    .Select(x => x.ToString("X2"))
+                    .ToAsyncEnumerable());
 
         public async Task<int> GetCharactersQuantity(string accountName)
         {
@@ -152,18 +156,12 @@ namespace Tripeace.Service.Services.Server
 
         public async Task<AccountListDTO> GetAccountList(int? pageNumber, string searchKey)
         {
-            var users = _accountRepository.Query();
-
-            if (!String.IsNullOrEmpty(searchKey))
-            {
-                searchKey = searchKey.ToLower();
-
-                users = users.Where(x =>
+            var users = _accountRepository.Query().Where(x =>
+                    string.IsNullOrEmpty(searchKey) || 
                     x.Name.ToLower().Contains(searchKey) ||
                     x.Email.ToLower().Contains(searchKey) ||
                     x.Players.Any(y => y.Name.ToLower().Contains(searchKey)));
-            }
-            
+
             var currentPageNum = pageNumber ?? 1;
             var offset = (ServerInfo.ItemsPerPage * currentPageNum) - ServerInfo.ItemsPerPage;
 
@@ -179,12 +177,12 @@ namespace Tripeace.Service.Services.Server
 
             foreach (var account in result)
             {
-                var isAccountBanned = await _banService.IsBanned(account.Id);
+                var isAccountBanned = await _banService.IsBanned(account);
                 var isAccountLocked = await _userManager.IsLockedOutAsync(account.AccountIdentity);
                 var AccountRole = (await _userManager.GetRolesAsync(account.AccountIdentity)).Single();
                 var banReason = isAccountBanned
                         ? account.AccountBan.Reason
-                        : String.Empty;
+                        : string.Empty;
 
                 var accountListItem = new AccountListItemDTO()
                 {
@@ -219,7 +217,6 @@ namespace Tripeace.Service.Services.Server
             }
 
             await _authorizationService.AssureAdminAuthorization(accountToEdit, whoRequested);
-
             return new AccountToAdminEditDTO()
             {
                 Id = accountToEdit.Id,
@@ -234,23 +231,19 @@ namespace Tripeace.Service.Services.Server
             var accountToEdit = await _accountRepository.GetById(dto.Id);
             if (accountToEdit == null)
             {
-                // Probably an invalid or outdated data, or maybe a someone trying to exploit the system.
                 throw new InvalidIdException();
             }
+
             var whoRequested = await _accountRepository.GetByName(dto.AccountWhoRequested);
             if (whoRequested == null)
             {
                 throw new InvalidIdException();
             }
 
-            await _authorizationService.AssureAdminAuthorization(accountToEdit, whoRequested);
-
             var checkAccount = await _accountRepository.GetByName(dto.Name);
             if (checkAccount != null && 
                 checkAccount.Id != dto.Id)
             {
-                // If tried to change to a account name that already exist
-                // and that is different from the edited account itself
                 throw new AccountInUseException();
             }
 
@@ -258,8 +251,6 @@ namespace Tripeace.Service.Services.Server
             if (checkEmail != null &&
                 checkEmail.Id != dto.Id)
             {
-                // If tried to change to a e-mail that already exist
-                // and that is different from the edited account itself
                 throw new EmailInUseException();
             }
 
@@ -267,7 +258,7 @@ namespace Tripeace.Service.Services.Server
             accountToEdit.Email = dto.Email;
             accountToEdit.AccountIdentity.News = dto.ReciveNews;
             accountToEdit.AccountIdentity.UserName = dto.Name;
-
+            await _authorizationService.AssureAdminAuthorization(accountToEdit, whoRequested);
             await _userManager.UpdateAsync(accountToEdit.AccountIdentity);
             await _accountRepository.Update(accountToEdit);
         }
@@ -286,25 +277,10 @@ namespace Tripeace.Service.Services.Server
                 throw new InvalidIdException();
             }
 
-            await _authorizationService.AssureAdminAuthorization(accountToLock, whoRequested);
-
-            try
-            {
-                accountToLock.AccountIdentity.LockoutEnabled = true;
-
-                while (!(await _userManager.IsLockedOutAsync(accountToLock.AccountIdentity)))
-                {
-                    await _signInManager.PasswordSignInAsync(accountToLock.Name, new Guid().ToString("N"), false, true);
-                }
-            }
-            catch (LockedAccountException)
-            {
-            }
-
+            accountToLock.AccountIdentity.LockoutEnabled = true;
             accountToLock.AccountIdentity.LockoutEnd = DateTime.Now.AddYears(50);
+            await _authorizationService.AssureAdminAuthorization(accountToLock, whoRequested);
             await _userManager.UpdateAsync(accountToLock.AccountIdentity);
-
-            return;
         }
 
         public async Task UnlockAccount(int id, string accountWhoRequested)
@@ -321,9 +297,8 @@ namespace Tripeace.Service.Services.Server
                 throw new InvalidIdException();
             }
 
-            await _authorizationService.AssureAdminAuthorization(accountToUnlock, whoRequested);
-
             accountToUnlock.AccountIdentity.LockoutEnd = null;
+            await _authorizationService.AssureAdminAuthorization(accountToUnlock, whoRequested);
             await _userManager.UpdateAsync(accountToUnlock.AccountIdentity);
         }
 
@@ -342,7 +317,6 @@ namespace Tripeace.Service.Services.Server
             }
 
             await _authorizationService.AssureAdminAuthorization(accountToDelete, whoRequested);
-
             await _accountRepository.Delete(accountToDelete);
         }
     }

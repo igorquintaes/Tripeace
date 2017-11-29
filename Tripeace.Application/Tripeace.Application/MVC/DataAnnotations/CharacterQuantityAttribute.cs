@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Tripeace.Application.MVC.DataAnnotations
 {
@@ -13,31 +11,22 @@ namespace Tripeace.Application.MVC.DataAnnotations
         readonly char _character;
         readonly int _quantity;
 
-        public char Character
-        {
-            get { return _character; }
-        }
-
-        public int Quantity
-        {
-            get { return _quantity; }
-        }
+        public char Character => _character;
+        public int Quantity => _quantity;
 
         public CharacterQuantityAttribute(char character, int quantity)
         {
+            if (quantity <= 0)
+                throw new Exception("quantity field can't be less or equals than 0");
+
             _character = character;
-
-            if (quantity < 0)
-                throw new Exception("quantity field can't be less than 0");
-
             _quantity = quantity;
         }
 
         public override bool IsValid(object value)
         {
-            if (value == null) return false;
-
-            return ((string)value).Count(x => x == Character) <= Quantity;
+            return value != null && 
+                   value.ToString().Count(x => x == Character) <= Quantity;
         }
     }
 }

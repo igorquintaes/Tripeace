@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Localization;
@@ -13,29 +10,13 @@ namespace Tripeace.Application.Controllers
     {
         private readonly IStringLocalizer<HomeController> _localizer;
 
-        public HomeController(IStringLocalizer<HomeController> localizer)
-        {
-            _localizer = localizer;
-        }
+        public HomeController(IStringLocalizer<HomeController> localizer) => _localizer = localizer;
 
-        public IActionResult Index()
-        {
-            return View();
-        }
+        public IActionResult Index() => View();
 
-        public IActionResult About()
-        {
-            ViewData["Message"] = "Your application description page.";
+        public IActionResult About() => View();
 
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
-        }
+        public IActionResult Contact() => View();
 
         [HttpPost]
         public IActionResult SetLanguage(string culture, string returnUrl)
@@ -49,9 +30,6 @@ namespace Tripeace.Application.Controllers
             return LocalRedirect(returnUrl);
         }
 
-        public IActionResult Error()
-        {
-            return View();
-        }
+        public IActionResult Error() => View();
     }
 }

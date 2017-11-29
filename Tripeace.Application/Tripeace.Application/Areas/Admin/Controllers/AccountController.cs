@@ -43,7 +43,7 @@ namespace Tripeace.Application.Areas.Admin.Controllers
         {
             var data = await _accountService.GetAccountList(pageNumber, Query);
 
-            var model = new ListModel()
+            var model = new ListViewModel()
             {
                 Data = data,
                 Query = Query,
@@ -66,7 +66,7 @@ namespace Tripeace.Application.Areas.Admin.Controllers
             try
             {
                 var dto = await _accountService.GetAccountToAdminEdit(id, User.Identity.Name);
-                var model = Mapper<AccountToAdminEditDTO, EditModel>(dto);
+                var model = Mapper<AccountToAdminEditDTO, EditViewModel>(dto);
 
                 return View(model);
             }
@@ -91,11 +91,11 @@ namespace Tripeace.Application.Areas.Admin.Controllers
         [HttpPost]
         [Route("[action]")]
         [Authorize(Roles = "GameMaster, God")]
-        public async Task<ActionResult> Edit(EditModel model)
+        public async Task<ActionResult> Edit(EditViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var dto = Mapper<EditModel, AccountToAdminEditDTO>(model);
+                var dto = Mapper<EditViewModel, AccountToAdminEditDTO>(model);
                 dto.AccountWhoRequested = User.Identity.Name;
 
                 try
@@ -198,15 +198,15 @@ namespace Tripeace.Application.Areas.Admin.Controllers
         [HttpPost]
         [Route("[action]")]
         [Authorize(Roles = "GameMaster, God")]
-        public async Task<ActionResult> Ban([FromBody]BanModel model)
+        public async Task<ActionResult> Ban([FromBody]BanViewModel model)
         {
-            var ajaxReturn = new AjaxFeedbackModel();
+            var ajaxReturn = new AjaxFeedbackViewModel();
 
             try
             {
-                var dto = Mapper<BanModel, BanDTO>(model);
+                var dto = Mapper<BanViewModel, BanDTO>(model);
                 dto.AdminAccount = User.Identity.Name;
-                dto.Date = Convert.ToDateTime(model.Date, CultureInfo.CurrentCulture.DateTimeFormat);
+                dto.ExpiresAt = Convert.ToDateTime(model.Date, CultureInfo.CurrentCulture.DateTimeFormat);
 
                 await _banService.BanAccount(dto);
             }
@@ -268,13 +268,13 @@ namespace Tripeace.Application.Areas.Admin.Controllers
         [HttpPost]
         [Route("[action]")]
         [Authorize(Roles = "GameMaster, God")]
-        public async Task<ActionResult> Unban([FromBody]UnbanModel model)
+        public async Task<ActionResult> Unban([FromBody]UnbanViewModel model)
         {
-            var ajaxReturn = new AjaxFeedbackModel();
+            var ajaxReturn = new AjaxFeedbackViewModel();
 
             try
             {
-                var dto = Mapper<UnbanModel, UnbanDTO>(model);
+                var dto = Mapper<UnbanViewModel, UnbanDTO>(model);
                 dto.AccountWhoRequested = User.Identity.Name;
 
                 await _banService.UnbanAccount(dto);
@@ -293,7 +293,7 @@ namespace Tripeace.Application.Areas.Admin.Controllers
                 LogUnauthorizedAccess(User.Identity.Name, "Admin/Account/Unban:Post");
                 return RedirectToAction("List");
             }
-            catch (NoAccountBanException)
+            catch (AccountIsNotBannedException)
             {
                 // Trying to unban a unbanned account
                 ajaxReturn.Title = _localizer["Error"];
@@ -322,7 +322,7 @@ namespace Tripeace.Application.Areas.Admin.Controllers
         [Authorize(Roles = "God")]
         public async Task<ActionResult> Delete([FromBody]int id)
         {
-            var ajaxReturn = new AjaxFeedbackModel();
+            var ajaxReturn = new AjaxFeedbackViewModel();
             try
             {
                 await _accountService.DeleteAccount(id, User.Identity.Name);

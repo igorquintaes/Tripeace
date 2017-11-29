@@ -9,6 +9,6 @@ namespace Tripeace.Service.DTO.Account
         public int Id { get; set; }
         public string Reason { get; set; }
         public string AdminAccount { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime ExpiresAt { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Tripeace.Domain.Entities;
@@ -21,25 +22,12 @@ namespace Tripeace.Service.Services.Server
         {
             var accountWhoRequestedRole = (await _userManager.GetRolesAsync(accountWhoRequested.AccountIdentity)).Single();
             var accountTargetRole = (await _userManager.GetRolesAsync(accountTarget.AccountIdentity)).Single();
+            Enum.TryParse(accountWhoRequestedRole, out AccountType requesterEnum);
+            Enum.TryParse(accountTargetRole, out AccountType targetEnum);
 
-            // God has all privileges
-            if (accountWhoRequestedRole == AccountType.God.ToString())
-            {
-                return;
-            }
-
-            // Request has no admin Privileges
-            if (accountWhoRequestedRole != AccountType.GameMaster.ToString())
-            {
+            if (requesterEnum < AccountType.GameMaster ||
+                requesterEnum <= targetEnum)
                 throw new NoAuthorizationException();
-            }
-
-            // Deny request to higher roles if not God
-            if (accountTargetRole == AccountType.God.ToString() ||
-                accountTargetRole == AccountType.GameMaster.ToString())
-            {
-                throw new NoAuthorizationException();
-            }
         }
     }
 }
