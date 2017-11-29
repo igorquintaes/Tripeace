@@ -34,27 +34,9 @@
     ]
   },
   {
-    "outputFileName": "wwwroot/lib/morris/morris.min.js",
-    "inputFiles": [
-      "wwwroot/lib/morris/morris.js"
-    ]
-  },
-  {
-    "outputFileName": "wwwroot/lib/morris/morris.min.css",
-    "inputFiles": [
-      "wwwroot/lib/morris/morris.css"
-    ]
-  },
-  {
     "outputFileName": "wwwroot/Areas/Admin/js/morris-data.min.js",
     "inputFiles": [
       "wwwroot/Areas/Admin/js/morris-data.js"
-    ]
-  },
-  {
-    "outputFileName": "wwwroot/lib/morris/raphael.min.js",
-    "inputFiles": [
-      "wwwroot/lib/morris/raphael.js"
     ]
   },
   {

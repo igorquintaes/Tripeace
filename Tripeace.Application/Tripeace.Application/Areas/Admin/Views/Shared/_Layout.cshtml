@@ -12,41 +12,30 @@
     <meta name="viewport" content="width=device-width" />
 
     <environment names="Development">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap-datepicker.css" />
-        <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.css" />
         <link rel="stylesheet" href="~/Areas/Admin/css/site.css" />
     </environment>
 
     <environment names="Staging,Production">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap-datepicker.min.css" />
-        <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.min.css" />
         <link rel="stylesheet" href="~/Areas/User/css/site.min.css" asp-append-version="true" />
     </environment>
 
-    <environment names="Development">
-        <script type="text/javascript" src="~/lib/jquery/dist/jquery.js"></script>
-        <script type="text/javascript" src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap-datepicker.min.css" />
 
-        <script type="text/javascript" src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
-        <script type="text/javascript" src="~/lib/bootstrap/dist/js/bootstrap-datepicker.js"></script>
+    <script type="text/javascript" src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+    <script type="text/javascript" src="~/lib/bootstrap/dist/js/bootstrap-datepicker.min.js"></script>
+    <script type="text/javascript" src="~/lib/bootstrap/dist/locales/bootstrap-datepicker.pt-BR.min.js" charset="UTF-8"></script>
+
+    <environment names="Development">
         <script type="text/javascript" src="~/Areas/Admin/js/site.js" asp-append-version="true"></script>
     </environment>
 
     <environment names="Staging,Production">
-        <script type="text/javascript" src="~/lib/jquery/dist/jquery.min.js"></script>
-
-        <script type="text/javascript" src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
-
-        <script type="text/javascript" src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
-        <script type="text/javascript" src="~/lib/bootstrap/dist/js/bootstrap-datepicker.min.js"></script>
         <script type="text/javascript" src="~/Areas/Admin/js/site.min.js" asp-append-version="true"></script>
     </environment>
-
-
-    <script type="text/javascript" src="~/lib/bootstrap/dist/locales/bootstrap-datepicker.pt-BR.min.js" charset="UTF-8"></script>
-
 
     @Html.Raw(JavaScriptSnippet.FullScript)
     @{
