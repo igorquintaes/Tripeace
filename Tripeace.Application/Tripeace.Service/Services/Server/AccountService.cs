@@ -35,6 +35,7 @@ namespace Tripeace.Service.Services.Server
         {
             _userManager = userManager;
             _banService = banService;
+            _authorizationService = authorizationService;
             _signInManager = signInManager;
             _roleManager = roleManager;
             _accountRepository = accountRepository;
@@ -160,7 +161,10 @@ namespace Tripeace.Service.Services.Server
                     string.IsNullOrEmpty(searchKey) || 
                     x.Name.ToLower().Contains(searchKey) ||
                     x.Email.ToLower().Contains(searchKey) ||
-                    x.Players.Any(y => y.Name.ToLower().Contains(searchKey)));
+                    x.Players.Any(y => y.Name.ToLower().Contains(searchKey)))
+                    .Include(x => x.AccountIdentity)
+                    .Include(x => x.AccountBan)
+                    .Include(x => x.Players);
 
             var currentPageNum = pageNumber ?? 1;
             var offset = (ServerInfo.ItemsPerPage * currentPageNum) - ServerInfo.ItemsPerPage;

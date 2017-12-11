@@ -6,17 +6,17 @@ set @var_username = 'Metallica';
 set @var_rolename = 'God';
 
 set @var_usernameId = 
-	(select au.Id from aspnetusers au 
+	(select au.Id from AspNetUsers au 
 	 where au.UserName = @var_username
      limit 1);
 
 set @var_rolenameId = 
-	(select ar.Id from aspnetroles ar 
+	(select ar.Id from AspNetRoles ar 
 	 where ar.Name = @var_rolename
      limit 1);
 
-delete from`tibiaotnew`.`aspnetuserroles`
+delete from AspNetUserRoles
 where UserId = @var_usernameId;
 
-insert into aspnetuserroles (UserId, RoleId)
+insert into AspNetUserRoles (UserId, RoleId)
 values (@var_usernameId, @var_rolenameId)
