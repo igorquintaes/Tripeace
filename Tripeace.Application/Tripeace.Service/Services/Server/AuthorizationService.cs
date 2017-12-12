@@ -15,7 +15,7 @@ namespace Tripeace.Service.Services.Server
 
         public AuthorizationService(UserManager<AccountIdentity> userManager)
         {
-            userManager = _userManager;
+            _userManager = userManager;
         }
 
         public async Task AssureAdminAuthorization(Account accountTarget, Account accountWhoRequested)

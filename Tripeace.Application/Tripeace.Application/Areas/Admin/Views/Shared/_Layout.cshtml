@@ -175,22 +175,25 @@
                         <a href="#"><i class="fa fa-fw fa-comments"></i> @Localizer["Comments"]</a>
                     </li>
                     <li>
-                        <a href="javascript:;" data-toggle="collapse" data-target="#demo"><i class="fa fa-fw fa-arrows-v"></i> Dropdown Example <i class="fa fa-fw fa-caret-down"></i></a>
-                        <ul id="demo" class="collapse">
-                            <li>
-                                <a href="#">Item 1</a>
+                        <a href="javascript:;" data-toggle="collapse" data-target="#settings"><i class="fa fa-fw fa-arrows-v"></i> @Localizer["Settings"]</a>
+                        <ul id="settings" class="collapse">
+                            <li id="admin-settings">
+                                <a asp-area="@(nameof(Tripeace.Application.Areas.Admin))"
+                                   asp-controller="@(nameof(Tripeace.Application.Areas.Admin.Controllers.SettingController))"
+                                   asp-action="@(nameof(Tripeace.Application.Areas.Admin.Controllers.SettingController.AdminSettings))">
+                                    <i class="fa fa-fw fa-wrench"></i>
+                                        @Localizer["AdminSettings"]
+                                </a>
                             </li>
                             <li>
-                                <a href="#">Item 2</a>
+                                <a asp-area="@(nameof(Tripeace.Application.Areas.Admin))"
+                                   asp-controller="@(nameof(Tripeace.Application.Areas.Admin.Controllers.SettingController))"
+                                   asp-action="@(nameof(Tripeace.Application.Areas.Admin.Controllers.SettingController.WebsiteSettings))">
+                                    <i class="fa fa-fw fa-wrench"></i>
+                                    @Localizer["WebsiteSettings"]
+                                </a>
                             </li>
                         </ul>
-                    </li>
-                    <li id="settings">
-                        <a  asp-area="@(nameof(Tripeace.Application.Areas.Admin))" 
-                            asp-controller="@(nameof(Tripeace.Application.Areas.Admin.Controllers.SettingController))" 
-                            asp-action="@(nameof(Tripeace.Application.Areas.Admin.Controllers.SettingController.Index))"><i class="fa fa-fw fa-wrench"></i> 
-                                @Localizer["Settings"]
-                        </a>
                     </li>
                 </ul>
             </div>

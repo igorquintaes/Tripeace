@@ -3,12 +3,23 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Tripeace.Application.Areas.Admin.Controllers
 {
+    [Area("Admin")]
+    [Route("admin/[controller]")]
+    [Authorize(Roles = "GameMaster, God")]
     public class SettingController : Controller
     {
-        [Area("Admin")]
-        [Route("admin/[controller]")]
+        [HttpGet]
+        [Route("[action]")]
         [Authorize(Roles = "GameMaster, God")]
-        public IActionResult Index()
+        public IActionResult AdminSettings()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        [Route("[action]")]
+        [Authorize(Roles = "GameMaster, God")]
+        public IActionResult WebsiteSettings()
         {
             return View();
         }

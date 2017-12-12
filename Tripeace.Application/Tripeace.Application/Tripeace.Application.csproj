@@ -32,7 +32,7 @@
     <Content Include="wwwroot\lib\font-awesome\fonts\FontAwesome.otf" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="automapper" Version="6.2.1" />
+    <PackageReference Include="automapper" Version="6.2.2" />
     <PackageReference Include="cloudscribe.Web.Pagination" Version="2.1.1" />
     <PackageReference Include="Localization.AspNetCore.TagHelpers" Version="0.3.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />

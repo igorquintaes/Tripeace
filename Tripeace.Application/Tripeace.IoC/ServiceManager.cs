@@ -43,7 +43,8 @@ namespace Tripeace.IoC
                 options.Password.RequireLowercase = false;
             })
                 .AddEntityFrameworkStores<ServerContext>()
-                .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders()
+                .AddUserManager<UserManager<AccountIdentity>>();
         }
 
         public static void InjectMvc(IServiceCollection services)
