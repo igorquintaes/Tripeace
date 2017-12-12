@@ -58,8 +58,10 @@
                 $("#modal-server-response-body").html(result.message);
                 $("#modal-server-response").modal("show");
 
-                $("#datetimepicker-ban").parent().removeClass("has-warning");
-                toogleButton("unban", model.Id);
+                if (result.Success == true) {
+                    $("#datetimepicker-ban").parent().removeClass("has-warning");
+                    toogleButton("unban", model.Id);
+                }
             }
         });
     });
@@ -86,7 +88,9 @@
                 $("#modal-server-response-body").html(result.message);
                 $("#modal-server-response").modal("show");
 
-                toogleButton("ban", model.Id);
+                if (result.Success == true) {
+                    toogleButton("ban", model.Id);
+                }
             }
         });
     });
@@ -110,10 +114,12 @@
                 $("#modal-server-response-body").html(result.message);
                 $("#modal-server-response").modal("show");
 
-                var baseRow = $(".btn-modal-action[data-id='" + id + "'][data-action='delete']").closest('tr.account-data');
-                baseRow.html("<td>" + localizer.DeletedRow + "</td>");
-                baseRow.addClass("danger")
-                baseRow.find("td").attr("colspan", "100%");
+                if (result.Success == true) {
+                    var baseRow = $(".btn-modal-action[data-id='" + id + "'][data-action='delete']").closest('tr.account-data');
+                    baseRow.html("<td>" + localizer.DeletedRow + "</td>");
+                    baseRow.addClass("danger")
+                    baseRow.find("td").attr("colspan", "100%");
+                }
             }
         });
     });

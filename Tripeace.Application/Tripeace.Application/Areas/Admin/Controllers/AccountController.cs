@@ -262,6 +262,7 @@ namespace Tripeace.Application.Areas.Admin.Controllers
             // Success
             ajaxReturn.Title = _localizer["Success"];
             ajaxReturn.Message = _localizer["BannedSuccefully"];
+            ajaxReturn.Success = true;
             return Json(ajaxReturn);
         }
 
@@ -314,6 +315,7 @@ namespace Tripeace.Application.Areas.Admin.Controllers
             // Success
             ajaxReturn.Title = _localizer["Success"];
             ajaxReturn.Message = _localizer["UnbannedSuccefully"];
+            ajaxReturn.Success = true;
             return Json(ajaxReturn);
         }
 
@@ -354,6 +356,7 @@ namespace Tripeace.Application.Areas.Admin.Controllers
             // Success
             ajaxReturn.Title = _localizer["Success"];
             ajaxReturn.Message = _localizer["AccountDeletedSuccefully"];
+            ajaxReturn.Success = true;
             return Json(ajaxReturn);
         }
     }
