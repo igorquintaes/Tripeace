@@ -163,31 +163,49 @@
             <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav side-nav">
                     <li id="dashboard">
-                        <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index"><i class=" fa fa-fw fa-dashboard"></i> @Localizer["Dashboard"]</a>
+                        <a asp-area="Admin" 
+                           asp-controller="Dashboard" 
+                           asp-action="Index">
+                            <i class=" fa fa-fw fa-dashboard"></i> 
+                            @Localizer["Dashboard"]
+                        </a>
                     </li>
                     <li id="accounts">
-                        <a asp-area="Admin" asp-controller="Account" asp-action="List"><i class=" fa fa-fw fa-users"></i> @Localizer["Accounts"]</a>
+                        <a asp-area="Admin" 
+                           asp-controller="Account" 
+                           asp-action="List">
+                            <i class=" fa fa-fw fa-users"></i> 
+                            @Localizer["Accounts"]
+                        </a>
                     </li>
                     <li id="posts">
-                        <a asp-area="Admin" asp-controller="Post" asp-action="List"><i class=" fa fa-fw fa-edit"></i> @Localizer["Posts"]</a>
+                        <a asp-area="Admin" 
+                           asp-controller="Post" 
+                           asp-action="List">
+                            <i class=" fa fa-fw fa-edit"></i> 
+                            @Localizer["Posts"]
+                        </a>
                     </li>
                     <li id="comments">
-                        <a href="#"><i class="fa fa-fw fa-comments"></i> @Localizer["Comments"]</a>
+                        <a href="#">
+                            <i class="fa fa-fw fa-comments"></i> 
+                            @Localizer["Comments"]
+                        </a>
                     </li>
                     <li>
                         <a href="javascript:;" data-toggle="collapse" data-target="#settings"><i class="fa fa-fw fa-arrows-v"></i> @Localizer["Settings"]</a>
                         <ul id="settings" class="collapse">
                             <li id="admin-settings">
-                                <a asp-area="@(nameof(Tripeace.Application.Areas.Admin))"
-                                   asp-controller="@(nameof(Tripeace.Application.Areas.Admin.Controllers.SettingController))"
+                                <a asp-area="Admin"
+                                   asp-controller="Setting"
                                    asp-action="@(nameof(Tripeace.Application.Areas.Admin.Controllers.SettingController.AdminSettings))">
                                     <i class="fa fa-fw fa-wrench"></i>
                                         @Localizer["AdminSettings"]
                                 </a>
                             </li>
                             <li>
-                                <a asp-area="@(nameof(Tripeace.Application.Areas.Admin))"
-                                   asp-controller="@(nameof(Tripeace.Application.Areas.Admin.Controllers.SettingController))"
+                                <a asp-area="Admin"
+                                   asp-controller="Setting"
                                    asp-action="@(nameof(Tripeace.Application.Areas.Admin.Controllers.SettingController.WebsiteSettings))">
                                     <i class="fa fa-fw fa-wrench"></i>
                                     @Localizer["WebsiteSettings"]
